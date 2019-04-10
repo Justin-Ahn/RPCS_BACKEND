@@ -15,7 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rpcs_db_server import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    #path('wt/', admin.site.urls),
+    #path('stm/', admin.site.urls),
+    #path('hs/', admin.site.urls),
+    #path('ca/', admin.site.urls),
+    #path('ga/', admin.site.urls),
+    #path('watch/', admin.site.urls),
+    #path('ct/', admin.site.urls),
+    path('health', views.health),
+    path('auth', views.auth),
 ]

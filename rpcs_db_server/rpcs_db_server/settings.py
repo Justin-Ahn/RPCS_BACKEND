@@ -25,7 +25,7 @@ SECRET_KEY = 't(d3=si!f)!9%g@!adsk!6acce*l@de%)0c(2pk7=t&mw4e)(6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['kinect.andrew.cmu.edu']
 
 
 # Application definition
