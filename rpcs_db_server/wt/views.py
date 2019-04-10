@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, Http404, JsonResponse
 from rpcs_db_server.utils import authorized
 from django.views.decorators.csrf import csrf_exempt
+from django.core import serializers
 from wt.models import Patient, Caregiver, Safezone
 import json
 
@@ -14,10 +15,8 @@ def patient(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
-        data = Patient.objects.all()
-        print(data.last().patient_id)
-
-        return HttpResponse('GET', status=200)
+        response_body = serializers.serialize('json', Patient.objects.all())
+        return HttpResponse(response_body, content_type='application/json', status=200)
     elif request.method == "POST":
         payload = json.loads(request.body.decode())[0]
 
@@ -38,10 +37,8 @@ def caregiver(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
-        data = Caregiver.objects.all()
-        print(data.last().event_id)
-
-        return HttpResponse('GET', status=200)
+        response_body = serializers.serialize('json', Caregiver.objects.all())
+        return HttpResponse(response_body, content_type='application/json', status=200)
     elif request.method == "POST":
         payload = json.loads(request.body.decode())[0]
 
@@ -62,10 +59,8 @@ def safezone(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
-        data = Safezone.objects.all()
-        print(data)
-
-        return HttpResponse('GET', status=200)
+        response_body = serializers.serialize('json', Safezone.objects.all())
+        return HttpResponse(response_body, content_type='application/json', status=200)
     elif request.method == "POST":
         payload = json.loads(request.body.decode())[0]
 
