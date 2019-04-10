@@ -23,13 +23,23 @@ class Phys_measure(models.Model):
     rr_low = models.IntegerField()
     rr_high = models.IntegerField()
 
-class Phy_params(models.Model):
+class Phys_params(models.Model):
     patient_id = models.IntegerField()
     coef_bp = models.FloatField()
     coef_pr = models.FloatField()
     coef_rr = models.FloatField()
     bias_logit = models.FloatField()
     ar = models.FloatField()
+
+class Phys_incidents(models.Model):
+    patient_id = models.IntegerField()
+    incident_id = models.IntegerField()
+    timestamp = models.DateTimeField()
+    pulse_rate = models.FloatField()
+    respiratory_rate = models.FloatField()
+    blood_pressure = models.FloatField()
+    incident_type = models.CharField(max_length=200)
+    recording = models.CharField(max_length=200)
 
 
     
