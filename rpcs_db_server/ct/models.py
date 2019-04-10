@@ -4,13 +4,13 @@ from django.db import models
 
 class Profile(models.Model):
     patient_id = models.IntegerField()
-    name = models.CharField()
+    name = models.CharField(max_length=200)
     age = models.IntegerField()
-    gender = models.CharField()
+    gender = models.CharField(max_length=200)
     doctor = models.IntegerField()
-    medication = models.CharField()
-    stage = models.CharField()
-    notes = models.CharField()
+    medication = models.CharField(max_length=200)
+    stage = models.CharField(max_length=200)
+    notes = models.CharField(max_length=200)
 
 class Incident(models.Model):
     patient_id = models.IntegerField()
