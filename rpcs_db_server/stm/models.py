@@ -5,7 +5,9 @@ class Results(models.Model):
     patient_id = models.IntegerField(default=0)
     scaled_rating1 = models.IntegerField(default=0)
     scaled_rating2 = models.IntegerField(default=0)
-    test_Results = models.TextField(blank=True)
+    test_results = models.TextField(blank=True)
+
+
 
 
 
