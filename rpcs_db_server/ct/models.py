@@ -25,6 +25,7 @@ class Incident(models.Model):
 class Trend(models.Model):
     patient_id = models.IntegerField()
     test_score = models.IntegerField()
-    num_injuries = num_falls = models.IntegerField()
+    num_injuries = models.IntegerField()
+    num_falls = models.IntegerField()
     weight = models.FloatField()
     body_fat_percentage = models.FloatField()
