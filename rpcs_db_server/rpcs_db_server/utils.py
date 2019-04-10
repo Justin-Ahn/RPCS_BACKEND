@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 import base64
 
-def is_authorized(request, action):
+def authorized(request, action):
     auth_header = request.META.get('HTTP_AUTHORIZATION')
     if not auth_header:
         return False
