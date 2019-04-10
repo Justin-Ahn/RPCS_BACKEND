@@ -11,8 +11,8 @@ class Wandering(models.Model):
 class Phys_measure(models.Model):
     patient_id = models.IntegerField()
     age = models.IntegerField()
-    gender = models.CharField()
-    stage = models.CharField()
+    gender = models.CharField(max_length=200)
+    stage = models.CharField(max_length=200)
     weight = models.FloatField()
     body_fat = models.FloatField()
     skinny_fat = models.FloatField()
