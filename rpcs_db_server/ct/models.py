@@ -19,12 +19,13 @@ class Incident(models.Model):
     pulse_rate = models.FloatField()
     respiratory_rate = models.FloatField()
     blood_pressure = models.FloatField()
-    incident_type = models.CharField()
-    recording = models.CharField()
+    incident_type = models.CharField(max_length=200)
+    recording = models.CharField(max_length=200)
 
 class Trend(models.Model):
     patient_id = models.IntegerField()
     test_score = models.IntegerField()
-    num_injuries = num_falls = models.IntegerField()
+    num_injuries = models.IntegerField()
+    num_falls = models.IntegerField()
     weight = models.FloatField()
     body_fat_percentage = models.FloatField()
