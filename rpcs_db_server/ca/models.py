@@ -40,6 +40,3 @@ class Phys_incidents(models.Model):
     blood_pressure = models.FloatField()
     incident_type = models.CharField(max_length=200)
     recording = models.CharField(max_length=200)
-
-
-    

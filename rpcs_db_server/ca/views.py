@@ -15,10 +15,9 @@ def wandering(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
-        data = Wandering.objects.all()
-        print(data.last().patient_id)
+        response_body = serializers.serialize('json', Wandering.objects.all())
+        return HttpResponse(response_body, content_type='application/json', status=200)
 
-        return HttpResponse('GET', status=200)
     elif request.method == "POST":
         payload = json.loads(request.body.decode())[0]
         print("payload:")
@@ -36,10 +35,9 @@ def phys_measures(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
-        data = Phys_measure.objects.all()
-        print(data.last().patient_id)
+        response_body = serializers.serialize('json', Phys_measure.objects.all())
+        return HttpResponse(response_body, content_type='application/json', status=200)
 
-        return HttpResponse('GET', status=200)
     elif request.method == "POST":
         payload = json.loads(request.body.decode())[0]
         print("payload:")
@@ -60,10 +58,9 @@ def phys_incidents(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
-        data = Phys_incidents.objects.all()
-        print(data.last().patient_id)
+        response_body = serializers.serialize('json', Phys_incidents.objects.all())
+        return HttpResponse(response_body, content_type='application/json', status=200)
 
-        return HttpResponse('GET', status=200)
     elif request.method == "POST":
         payload = json.loads(request.body.decode())[0]
         print("payload:")
@@ -78,16 +75,15 @@ def phys_incidents(request):
         raise HTTP404
 
     
-    @csrf_exempt
+@csrf_exempt
 def phys_params(request):
     if not authorized(request, None):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
-        data = Phys_params.objects.all()
-        print(data.last().patient_id)
+        response_body = serializers.serialize('json', Phys_params.objects.all())
+        return HttpResponse(response_body, content_type='application/json', status=200)
 
-        return HttpResponse('GET', status=200)
     elif request.method == "POST":
         payload = json.loads(request.body.decode())[0]
         print("payload:")

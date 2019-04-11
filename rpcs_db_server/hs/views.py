@@ -15,10 +15,9 @@ def events(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
-        data = Events.objects.all()
-        print(data.last().sensor_id)
+        response_body = serializers.serialize('json', Events.objects.all())
+        return HttpResponse(response_body, content_type='application/json', status=200)
 
-        return HttpResponse('GET', status=200)
     elif request.method == "POST":
         payload = json.loads(request.body.decode())[0]
         print("payload:")
