@@ -10,16 +10,16 @@ from ct.models import Profile, Incident, Trend
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
-def addPerms(user, perms):
+def addPerms(user, model):
+    ct = ContentType.objects.get_for_model(model)
+    perms = Permission.objects.filter(content_type=ct)
     for i in range(4):
         user.user_permissions.add(perms[i])
         user.save()
 
 wtUser = User(username="wt")
-wtPatientCt = ContentType.objects.get_for_model(wtPatient)
-wtPatientPerms = Permission.objects.filter(content_type=wtPatientCt)
 wtUser.save()
-addPerms(wtUser, wtPatientPerms)
+addPerms(wtUser, wtPatient)
 
 caregiverCt = ContentType.objects.get_for_model(Caregiver)
 wtCaregiverPerms = Permission.objects.filter(content_type=caregiverCt)
@@ -35,16 +35,19 @@ wtUser.save()
 
 
 stmUser = User(username="stm")
-stmResultsCt = ContentType.objects.get_for_model(Results)
-stmResultsPerms = Permission.objects.filter(content_type=stmResultsPerms)
-stmUser.save()
-for i in 
+addPerms(stmUser, stmResultsPerms)
 
-    # hsUser = User(username="hs")
-    # hsUser.save()
+hsUser = User(username="hs")
+hsEventCt = ContentType.objects.get_for_model(hsEvent)
+hsEventPerms = Permission.objects.filter(content_type=hsEventCt)
+hsUser.save()
 
-    # caUser = User(username="ca")
-    # caUser.save()
+caUser = User(username="ca")
+# from ca.models import Wandering, Phys_measure, Phy_params
+caWanderingCt = ContentType.objects.get_for_model(Wandering)
+caWanderingPerms = Permission.objects.filter(content_type=caWanderingCt)
+caUser.save()
+
 
     # gaUser = User(username="ga")
     # gaUser.save()
