@@ -15,6 +15,7 @@ def patient(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
+
         response_body = serializers.serialize('json', Patient.objects.all())
         return HttpResponse(response_body, content_type='application/json', status=200)
     elif request.method == "POST":
@@ -37,6 +38,7 @@ def caregiver(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
+
         response_body = serializers.serialize('json', Caregiver.objects.all())
         return HttpResponse(response_body, content_type='application/json', status=200)
     elif request.method == "POST":
@@ -59,6 +61,7 @@ def safezone(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
+
         response_body = serializers.serialize('json', Safezone.objects.all())
         return HttpResponse(response_body, content_type='application/json', status=200)
     elif request.method == "POST":
@@ -73,6 +76,7 @@ def safezone(request):
         return HttpResponse('Accepted', status=200)
     else:
         raise HTTP404
+
 
 
 

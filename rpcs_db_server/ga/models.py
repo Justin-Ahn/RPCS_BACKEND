@@ -11,7 +11,7 @@ class Semantic(models.Model):
     semantic_score = models.IntegerField()
     timestamp = models.DateTimeField()
 
-class Procedual(models.Model):
+class Procedural(models.Model):
     patient_id = models.IntegerField()
     procedural_score = models.IntegerField()
     timestamp = models.DateTimeField()
