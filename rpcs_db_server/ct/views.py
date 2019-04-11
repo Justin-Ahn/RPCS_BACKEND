@@ -31,7 +31,7 @@ def patient_profile(request):
         raise HTTP404
 
     
-    @csrf_exempt
+@csrf_exempt
 def patient_incidents(request):
     if not authorized(request, None):
         return HttpResponse('Unauthorized', status=401)
@@ -53,7 +53,7 @@ def patient_incidents(request):
         raise HTTP404
     
 
-    @csrf_exempt
+@csrf_exempt
 def patient_trends(request):
     if not authorized(request, None):
         return HttpResponse('Unauthorized', status=401)
