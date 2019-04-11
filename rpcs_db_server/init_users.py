@@ -10,29 +10,35 @@ from ct.models import Profile, Incident, Trend
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
+def addPerms(user, perms):
+    for i in range(4):
+        user.user_permissions.add(perms[i])
+        user.save()
+
 wtUser = User(username="wt")
 wtPatientCt = ContentType.objects.get_for_model(wtPatient)
 wtPatientPerms = Permission.objects.filter(content_type=wtPatientCt)
 wtUser.save()
+addPerms(wtUser, wtPatientPerms)
+
+caregiverCt = ContentType.objects.get_for_model(Caregiver)
+wtCaregiverPerms = Permission.objects.filter(content_type=caregiverCt)
 for i in range(4):
-    print(i)
-    wtUser.user_permissions.add(wtPatientPerms[i])
+    wtUser.user_permissions.add(wtCaregiverPerms[i])
     wtUser.save()
-    # caregiverCt = ContentType.objects.get_for_model(Caregiver)
-    # wtCaregiverPerms = Permission.objects.filter(content_type=caregiverCt)
-    # for i in range(4):
-    #     wtUser.user_permissions.add(wtCaregiverPerms[i])
-    #     wtUser.save()
-    # safezoneCt = ContentType.objects.get_for_model(Safezone)
-    # wtSafezonePerms = Permission.objects.filter(content_type=safezonePerms)
-    # for i in range(4):
-    #     wtUser.user_permissions.add(wtSafezonePerms[i])
-    #     wtUser.save()
-    # wtUser.save()
+safezoneCt = ContentType.objects.get_for_model(Safezone)
+wtSafezonePerms = Permission.objects.filter(content_type=safezonePerms)
+for i in range(4):
+    wtUser.user_permissions.add(wtSafezonePerms[i])
+    wtUser.save()
+wtUser.save()
 
 
-    # stmUser = User(username="stm")
-    # stmUser.save()
+stmUser = User(username="stm")
+stmResultsCt = ContentType.objects.get_for_model(Results)
+stmResultsPerms = Permission.objects.filter(content_type=stmResultsPerms)
+stmUser.save()
+for i in 
 
     # hsUser = User(username="hs")
     # hsUser.save()
