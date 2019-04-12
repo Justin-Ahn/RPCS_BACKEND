@@ -38,7 +38,6 @@ def ingest_data(request, model, fields):
     for json_entry in payload:
         populated_form = form(data=json_entry)
         if valid_json_fields(fields, json_entry) and populated_form.is_valid():
-            print(populated_form)
             received_data.append(populated_form)
         else:
             return HttpResponse('RPCS Backend Server: Data push denied -- invalid params.', status=400)
@@ -63,7 +62,7 @@ def return_data(request, model, param):
 
     all_data = serializers.serialize('json', model.objects.all())
     data_list = json.loads(all_data)
-    mapped_list = list(map(lambda x: x['fields'], data_list)) # 'fields' -> a relic of how django processes data
+    mapped_list = list(map(lambda x: x['fields'], data_list))  # 'fields' -> a relic of how django processes data
 
     if pid_to_get is not None:
         response = list(filter(lambda x: x[param] == pid_to_get, mapped_list))
