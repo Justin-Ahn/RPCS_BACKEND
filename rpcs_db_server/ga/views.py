@@ -14,7 +14,7 @@ def logical(request):
     if not authorized(request, None):
         return HttpResponse('Unauthorized', status=401)
 
-    my_fields = ('patient_id', 'logical_thinking_score', 'timestamp')
+    my_fields = ('patient_id', 'logical_score', 'timestamp', 'game_id')
     if request.method == "GET":
         return return_data(request, Logical, 'patient_id')
     elif request.method == "POST":

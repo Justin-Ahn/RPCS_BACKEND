@@ -37,8 +37,11 @@ def ingest_data(request, model, fields):
         return True
 
     for json_entry in payload:
-        if 'timestamp' in json_entry and json_entry['timestamp'] is None:  # A disgusting hack but this will do...
-            json_entry['timestamp'] = datetime.now()
+        if 'timestamp' in json_entry:  # A disgusting hack but this will do...
+            if json_entry['timestamp'] is None:
+                json_entry['timestamp'] = datetime.now()
+            else:
+                json_entry['timestamp'] = datetime.strptime(json_entry['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
 
         populated_form = form(data=json_entry)
         if valid_json_fields(fields, json_entry) and populated_form.is_valid():
