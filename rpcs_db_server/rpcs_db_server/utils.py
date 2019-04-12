@@ -24,15 +24,21 @@ def authorized(request, action):
         return False
 
 
-def ingest_data(request, model):
+def ingest_data(request, model, fields):
     payload = json.loads(request.body.decode())
     received_data = []
-    form = modelform_factory(model, fields=('patient_name', 'patient_id', 'scaled_rating1', 'scaled_rating2',
-                                              'test_results'))
+    form = modelform_factory(model, fields=fields)
+
+    def valid_json_fields(fields, json_data):
+        for field in fields:
+            if field not in json_data:
+                return False
+        return True
 
     for json_entry in payload:
         populated_form = form(data=json_entry)
-        if populated_form.is_valid():
+        if valid_json_fields(fields, json_entry) and populated_form.is_valid():
+            print(populated_form)
             received_data.append(populated_form)
         else:
             return HttpResponse('RPCS Backend Server: Data push denied -- invalid params.', status=400)
