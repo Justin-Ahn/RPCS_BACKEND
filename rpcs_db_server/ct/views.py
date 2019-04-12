@@ -15,8 +15,15 @@ def patient_profile(request):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
-        response_body = serializers.serialize('json', Profile.objects.all())
-        return HttpResponse(response_body, content_type='application/json', status=200)
+        target = request.GET.get('patient_id', '')
+        
+        all_data = serializers.serialize('json', Profile.objects.all())
+        data_list = json.loads(all_data)
+        
+        mapped_list = list(map(lambda x: x['fields'], data_list))
+        response = list(filter(lambda x: x['patient_id'] == int(target), mapped_list))
+
+        return HttpResponse(json.dumps(response), content_type='application/json', status=200)
 
     elif request.method == "POST":
         payload = json.loads(request.body.decode())[0]
