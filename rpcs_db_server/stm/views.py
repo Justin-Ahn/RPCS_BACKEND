@@ -1,34 +1,24 @@
 from django.shortcuts import render
 from django.http import HttpResponse, Http404, JsonResponse
-from rpcs_db_server.utils import authorized
+from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from stm.models import Results
+from django.forms.models import modelform_factory
 import json
 
-
 # Create your views here.
-
 @csrf_exempt
 def tests(request):
     if not authorized(request, None):
         return HttpResponse('Unauthorized', status=401)
 
     if request.method == "GET":
-        response_body = serializers.serialize('json', Results.objects.all())
-        return HttpResponse(response_body, content_type='application/json', status=200)
-
+        return return_data(request, Results, 'patient_id')
     elif request.method == "POST":
-        payload = json.loads(request.body.decode())[0]
-        print("payload:")
-        print(payload)
-        newObject = Results(patient_name = payload['patient_name'], patient_id = payload['patient_id'], 
-        scaled_rating1 = payload['scaled_rating1'], scaled_rating2 = payload['scaled_rating2'], 
-        test_results = payload['test_results'])
-        newObject.save()
-        return HttpResponse('Accepted', status=200)
+        return ingest_data(request, Results)
     else:
-        raise HTTP404
+        return handle_invalid_request(request)
 
 
 
