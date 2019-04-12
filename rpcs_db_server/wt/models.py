@@ -4,14 +4,14 @@ from django.db import models
 
 class Patient(models.Model):
     location = models.CharField(max_length=500)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField()
     patient_id = models.IntegerField(default=0)
     wt_patient_id = models.IntegerField(primary_key=True)
     
 
 class Caregiver(models.Model):
     location = models.CharField(max_length=500)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField()
     caregiver_id = models.IntegerField(default=0)
     wt_caregiver_id = models.IntegerField(primary_key=True)
 

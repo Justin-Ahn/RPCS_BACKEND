@@ -8,7 +8,3 @@ class Results(models.Model):
     test_results = models.TextField(blank=True)
 
 
-
-
-
-# Create your models here.

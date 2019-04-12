@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from django.core import serializers
 from django.http import HttpResponse
 from django.forms.models import modelform_factory
+from datetime import datetime
 import json
 import base64
 
@@ -36,6 +37,9 @@ def ingest_data(request, model, fields):
         return True
 
     for json_entry in payload:
+        if 'timestamp' in json_entry and json_entry['timestamp'] is None:  # A disgusting hack but this will do...
+            json_entry['timestamp'] = datetime.now()
+
         populated_form = form(data=json_entry)
         if valid_json_fields(fields, json_entry) and populated_form.is_valid():
             received_data.append(populated_form)
