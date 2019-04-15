@@ -6,5 +6,5 @@ class Events(models.Model):
     sensor_id = models.UUIDField()
     sensor_type = models.CharField(max_length=200)
     timestamp = models.DateTimeField()
-    data = models.BinaryField()
+    data = models.CharField(max_length=5000)
     event_id = models.IntegerField()
