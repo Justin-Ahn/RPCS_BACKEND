@@ -1,10 +1,7 @@
-from django.shortcuts import render
-from django.http import HttpResponse, Http404, JsonResponse
-from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request
-from django.views.decorators.csrf import csrf_exempt
-from django.core import serializers
 from ca.models import Wandering, Phys_measure, Phys_incidents, Phys_params
-import json
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request, json_timestamp_customizer
 
 
 # Create your views here.
@@ -46,7 +43,7 @@ def phys_incidents(request):
     if request.method == "GET":
         return return_data(request, Phys_incidents, 'patient_id')
     elif request.method == "POST":
-        return ingest_data(request, Phys_incidents, my_fields)
+        return ingest_data(request, Phys_incidents, my_fields, json_customizer=json_timestamp_customizer)
     else:
         return handle_invalid_request(request)
 

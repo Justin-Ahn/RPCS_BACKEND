@@ -1,10 +1,7 @@
-from django.shortcuts import render
-from django.http import HttpResponse, Http404, JsonResponse
-from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.core import serializers
 from ga.models import Logical, Semantic, Procedural, Episodic
-import json
+from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request, json_timestamp_customizer
 
 
 # Create your views here.
@@ -18,7 +15,7 @@ def logical(request):
     if request.method == "GET":
         return return_data(request, Logical, 'patient_id')
     elif request.method == "POST":
-        return ingest_data(request, Logical, my_fields)
+        return ingest_data(request, Logical, my_fields, json_customizer=json_timestamp_customizer)
     else:
         return handle_invalid_request(request)
 
@@ -32,7 +29,7 @@ def semantic(request):
     if request.method == "GET":
         return return_data(request, Semantic, 'patient_id')
     elif request.method == "POST":
-        return ingest_data(request, Semantic, my_fields)
+        return ingest_data(request, Semantic, my_fields, json_customizer=json_timestamp_customizer)
     else:
         return handle_invalid_request(request)
 
@@ -45,7 +42,7 @@ def procedural(request):
     if request.method == "GET":
         return return_data(request, Procedural, 'patient_id')
     elif request.method == "POST":
-        return ingest_data(request, Procedural, my_fields)
+        return ingest_data(request, Procedural, my_fields, json_customizer=json_timestamp_customizer)
     else:
         return handle_invalid_request(request)
     
@@ -60,7 +57,7 @@ def episodic(request):
     if request.method == "GET":
         return return_data(request, Episodic, 'patient_id')
     elif request.method == "POST":
-        return ingest_data(request, Episodic, my_fields)
+        return ingest_data(request, Episodic, my_fields,  json_customizer=json_timestamp_customizer)
     else:
         return handle_invalid_request(request)
 

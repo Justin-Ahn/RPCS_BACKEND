@@ -1,10 +1,8 @@
-from django.shortcuts import render
-from django.http import HttpResponse, Http404, JsonResponse
-from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.core import serializers
+from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request
 from watch.models import Patient, Event
-import json
+
 
 # Create your views here.
 

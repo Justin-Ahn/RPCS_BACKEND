@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.http import HttpResponse, Http404, JsonResponse
 from rpcs_db_server.utils import authorized
 
