@@ -43,7 +43,9 @@ def ingest_data(request, model, fields):
             else:
                 json_entry['timestamp'] = datetime.strptime(json_entry['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
 
-        populated_form = form(data=json_entry)
+        if 'data' in json_entry:
+            json_entry['data'] = json.dumps(json_entry['data'])
+
         if valid_json_fields(fields, json_entry) and populated_form.is_valid():
             received_data.append(populated_form)
         else:
