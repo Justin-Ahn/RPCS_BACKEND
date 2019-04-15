@@ -10,7 +10,7 @@ class ResultsType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    links = graphene.List(LinkType)
+    links = graphene.List(ResultsType)
 
     def resolve_links(self, info, **kwargs):
-        return Link.objects.all()
+        return Results.objects.all()

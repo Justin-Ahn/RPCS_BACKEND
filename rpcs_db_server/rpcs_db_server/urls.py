@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rpcs_db_server import views
+from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 
 urlpatterns = [
@@ -29,5 +30,5 @@ urlpatterns = [
     path('ct/', include("ct.urls")),
     path('health', views.health),
     path('auth', views.auth),
-    path('graphql', GraphQLView.as_view(graphiql=True))
+    path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
 ]
