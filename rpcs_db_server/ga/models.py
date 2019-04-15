@@ -5,7 +5,7 @@ class Logical(models.Model):
     patient_id = models.IntegerField()
     logical_score = models.IntegerField()
     timestamp = models.DateTimeField()
-    game_id = models.IntegerField()
+    game_id = models.IntegerField(default=0)
 
 class Semantic(models.Model):
     patient_id = models.IntegerField()
