@@ -34,7 +34,8 @@ def json_timestamp_customizer(json_data):
             json_data['timestamp'] = datetime.now()
         else:
             json_data['timestamp'] = datetime.strptime(json_data['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
-    return True
+        return True
+    return False
 
 
 def json_j2str_customizer(json_data):

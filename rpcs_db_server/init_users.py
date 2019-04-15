@@ -1,17 +1,15 @@
 from django.contrib.auth.models import User
-from wt.models import Patient as wtPatient, Caregiver, Safezone
-from stm.models import Results
-from hs.models import Event as hsEvent
-from ca.models import Wandering, Phys_measure, Phy_params
-from ga.models import Logical, Semantic, Procedual, Episodic
-from watch.models import Patient as watchPatient, Event as watchEvent
-from ct.models import Profile, Incident, Trend
 
 groups = ["ct", "ga", "hs", "stm", "watch", "wt", "readonly"]
 for user in groups:
     new_user = User(username=user + "_user", password='rpcs_' + user + '2019')
     new_user.save()
 
+
+"""from wt.models import Patient as wtPatient, Caregiver, Safezone
+from stm.models import Results
+from ga.models import Logical, Semantic, Procedual, Episodic
+from ct.models import Profile, Incident, Trend"""
 
 """def addPerms(user, model):
     ct = ContentType.objects.get_for_model(model)
