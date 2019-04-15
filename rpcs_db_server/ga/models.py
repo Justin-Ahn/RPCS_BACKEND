@@ -3,8 +3,9 @@ from django.db import models
 # Create your models here.
 class Logical(models.Model):
     patient_id = models.IntegerField()
-    logical_thinking_score = models.IntegerField()
+    logical_score = models.IntegerField()
     timestamp = models.DateTimeField()
+    game_id = models.IntegerField()
 
 class Semantic(models.Model):
     patient_id = models.IntegerField()
