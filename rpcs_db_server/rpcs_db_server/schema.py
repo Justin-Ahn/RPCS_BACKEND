@@ -1,16 +1,16 @@
+import graphene
+from graphene_django import DjangoObjectType
+
 from stm.models import Results
-from graphene import ObjectType, Node, Schema
-from graphene_django.fields import DjangoConnectionField
-from graphene_django.types import DjangoObjectType
 
-class ResultsNode(DjangoObjectType):
 
+class ResultsType(DjangoObjectType):
     class Meta:
         model = Results
-        interfaces = (Node, )
 
-class Query(ObjectType):
-    category = Node.Field(ResultsNode)
-    all_categories = DjangoConnectionField(ResultsNode)
 
-schema = Schema(query=Query)
+class Query(graphene.ObjectType):
+    links = graphene.List(LinkType)
+
+    def resolve_links(self, info, **kwargs):
+        return Link.objects.all()
