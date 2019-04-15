@@ -25,7 +25,18 @@ def authorized(request, action):
         return False
 
 
-def ingest_data(request, model, fields):
+def json_timestamp_customizer(json_data):
+    if 'timestamp' in json_data:  # A disgusting hack but this will do...
+        if json_data['timestamp'] is None:
+            json_data['timestamp'] = datetime.now()
+        else:
+            json_data['timestamp'] = datetime.strptime(json_data['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
+
+def json_j2str_customizer(json_data):
+    if 'data' in json_data:
+        json_data['data'] = json.dumps(json_data['data'])
+
+def ingest_data(request, model, fields, json_customizer=None):
     payload = json.loads(request.body.decode())
     received_data = []
     form = modelform_factory(model, fields=fields)
@@ -37,14 +48,10 @@ def ingest_data(request, model, fields):
         return True
 
     for json_entry in payload:
-        if 'timestamp' in json_entry:  # A disgusting hack but this will do...
-            if json_entry['timestamp'] is None:
-                json_entry['timestamp'] = datetime.now()
-            else:
-                json_entry['timestamp'] = datetime.strptime(json_entry['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        if json_customizer is not None:
+            json_customizer(json_entry)
 
-        if 'data' in json_entry:
-            json_entry['data'] = json.dumps(json_entry['data'])
+        populated_form = form(data=json_entry)
 
         if valid_json_fields(fields, json_entry) and populated_form.is_valid():
             received_data.append(populated_form)
