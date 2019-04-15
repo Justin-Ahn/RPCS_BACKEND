@@ -47,7 +47,11 @@ def json_j2str_customizer(json_data):
 
 
 def ingest_data(request, model, fields, json_customizer=None):
-    payload = json.loads(request.body.decode())
+    try:
+        payload = json.loads(request.body.decode())
+    except json.decoder.JSONDecodeError:
+        return HttpResponse("Not a valid Json!", status=400)
+
     received_data = []
     form = modelform_factory(model, fields=fields)
 

@@ -3,17 +3,15 @@ from rpcs_db_server.utils import authorized
 
 
 def health(request):
-    if request.method != "GET":     
-        raise Http404("HTTP Verbs Accepted: GET")	
     return HttpResponse('Server is up and running!')
 
 
 def auth(request): 
     if request.method != "GET":        
-        raise Http404("HTTP Verbs Accepted: GET")	
+        return HttpResponse('Invalid HTTP Method', status=405)
 
     if not authorized(request, None):
         return HttpResponse('Unauthorized', status=401)
         
-    return JsonResponse({'foo':'auth'})
+    return HttpResponse("Permissions are encapsulated by username")
 
