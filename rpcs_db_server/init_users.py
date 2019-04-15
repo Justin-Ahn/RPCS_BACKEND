@@ -10,7 +10,13 @@ from ct.models import Profile, Incident, Trend
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
-def addPerms(user, model):
+groups = ["ca", "ct", "ga", "hs", "stm", "watch", "wt"]
+for user in groups:
+    new_user = User(username=user + "_user")
+    new_user.save()
+
+
+"""def addPerms(user, model):
     ct = ContentType.objects.get_for_model(model)
     perms = Permission.objects.filter(content_type=ct)
     for i in range(4):
@@ -46,7 +52,7 @@ caUser = User(username="ca")
 # from ca.models import Wandering, Phys_measure, Phy_params
 caWanderingCt = ContentType.objects.get_for_model(Wandering)
 caWanderingPerms = Permission.objects.filter(content_type=caWanderingCt)
-caUser.save()
+caUser.save()"""
 
 
     # gaUser = User(username="ga")

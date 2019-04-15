@@ -58,7 +58,7 @@ def ingest_data(request, model, fields, json_customizer=None):
         if valid_json_fields(fields, json_entry) and populated_form.is_valid():
             received_data.append(populated_form)
         else:
-            error_msg = 'RPCS Backend Server: Data push denied -- invalid payload.' + \
+            error_msg = 'RPCS Backend Server: Data push denied -- invalid payload. \n\n' + \
                         'Both conditions need to be met -- \n' + \
                         'All Json fields are present: ' + str(valid_json_fields(fields, json_entry)) + '\n' + \
                         'The Json data should be valid. Errors: ' + str(populated_form.errors.as_data())
