@@ -7,7 +7,7 @@ from stm.models import Results
 # Create your views here.
 @csrf_exempt
 def tests(request):
-    if not authorized(request, None):
+    if not authorized(request, "stm"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_name', 'patient_id', 'scaled_rating1', 'scaled_rating2', 'test_results')

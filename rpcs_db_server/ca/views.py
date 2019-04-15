@@ -8,7 +8,7 @@ from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_in
 
 @csrf_exempt
 def wandering(request):
-    if not authorized(request, None):
+    if not authorized(request, "ca"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_id', 'caregiver_id', 'is_wandering', 'alerted')
@@ -21,7 +21,7 @@ def wandering(request):
 
 @csrf_exempt
 def phys_measures(request):
-    if not authorized(request, None):
+    if not authorized(request, "ca"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_id', 'age', 'gender', 'stage', 'weight', 'body_fat', 'skinny_fat', 'bp_low', 'bp_high',
@@ -35,7 +35,7 @@ def phys_measures(request):
 
 @csrf_exempt
 def phys_incidents(request):
-    if not authorized(request, None):
+    if not authorized(request, "ca"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_id', 'incident_id', 'timestamp', 'pulse_rate', 'respiratory_rate', 'blood_pressure',
@@ -50,7 +50,7 @@ def phys_incidents(request):
     
 @csrf_exempt
 def phys_params(request):
-    if not authorized(request, None):
+    if not authorized(request, "ca"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_id', 'coef_bp', 'coef_pr', 'coef_rr', 'bias_logit', 'ar')

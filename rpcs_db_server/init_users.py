@@ -7,12 +7,9 @@ from ga.models import Logical, Semantic, Procedual, Episodic
 from watch.models import Patient as watchPatient, Event as watchEvent
 from ct.models import Profile, Incident, Trend
 
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
-
-groups = ["ca", "ct", "ga", "hs", "stm", "watch", "wt"]
+groups = ["ct", "ga", "hs", "stm", "watch", "wt", "readonly"]
 for user in groups:
-    new_user = User(username=user + "_user")
+    new_user = User(username=user + "_user", password='rpcs_' + user + '2019')
     new_user.save()
 
 
