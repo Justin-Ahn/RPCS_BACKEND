@@ -7,6 +7,8 @@ from datetime import datetime
 import json
 import base64
 
+response_prefix = "RPCS Backend Server: "
+
 
 def authorized(request, action):
     auth_header = request.META.get('HTTP_AUTHORIZATION')
@@ -50,7 +52,7 @@ def ingest_data(request, model, fields, json_customizer=None):
     try:
         payload = json.loads(request.body.decode())
     except json.decoder.JSONDecodeError:
-        return HttpResponse("Not a valid Json!", status=400)
+        return HttpResponse(response_prefix + "Not a valid Json!", status=400)
 
     received_data = []
     form = modelform_factory(model, fields=fields)
@@ -71,7 +73,7 @@ def ingest_data(request, model, fields, json_customizer=None):
         if valid_json_fields(fields, json_entry) and populated_form.is_valid() and custom_success:
             received_data.append(populated_form)
         else:
-            error_msg = 'RPCS Backend Server: Data push denied -- invalid payload. \n\n' + \
+            error_msg = response_prefix + 'Data push denied -- invalid payload. \n\n' + \
                         'Both conditions need to be met -- \n' + \
                         'All Json fields are present: ' + str(valid_json_fields(fields, json_entry)) + '\n' + \
                         'The Json data should be valid. Errors: ' + str(populated_form.errors.as_data())
@@ -81,7 +83,7 @@ def ingest_data(request, model, fields, json_customizer=None):
     for data_entry in received_data:
         data_entry.save()
 
-    response_text = 'RPCS Backend Server: Accepted ' + \
+    response_text = response_prefix + 'Accepted ' + \
                     str(len(received_data)) + (' entry' if len(received_data) == 1 else ' entries')
     return HttpResponse(response_text, status=200)
 
@@ -94,7 +96,7 @@ def return_data(request, model, param):
         if target == '':
             pid_to_get = None
         else:
-            return HttpResponse('RPCS Backend Server: Data pull denied -- invalid params.', status=400)
+            return HttpResponse(response_prefix + 'Data pull denied -- invalid params.', status=400)
 
     all_data = serializers.serialize('json', model.objects.all())
     data_list = json.loads(all_data)
@@ -109,5 +111,5 @@ def return_data(request, model, param):
 
 
 def handle_invalid_request(request):
-    response_text = 'RPCS Backend Server: Invalid HTTP request method'
+    response_text = response_prefix + 'Invalid HTTP request method'
     return HttpResponse(response_text, status=405)
