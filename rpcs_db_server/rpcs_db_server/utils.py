@@ -7,6 +7,7 @@ from datetime import datetime
 import json
 import base64
 
+
 def authorized(request, action):
     auth_header = request.META.get('HTTP_AUTHORIZATION')
     if not auth_header:
@@ -16,11 +17,13 @@ def authorized(request, action):
     username, password = base64.b64decode(creds).decode().split(":")
    
     user = authenticate(username=username, password=password)
-    
+
+    # A really bad hack for permissions but hopefully this will suffice. Permissions currently depend on parsing
+    # username & seeing that it corresponds with the api endpoint the user is hitting
     if user is not None:
-        return True
-        #name = user.get_username()
-        #Need to actually add permissions & check permissions
+        if request.method == "GET" and "readonly" in username:
+            return True
+        return action in username
     else:
         return False
 
@@ -31,11 +34,16 @@ def json_timestamp_customizer(json_data):
             json_data['timestamp'] = datetime.now()
         else:
             json_data['timestamp'] = datetime.strptime(json_data['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
+    return True
 
 
 def json_j2str_customizer(json_data):
     if 'data' in json_data:
-        json_data['data'] = json.dumps(json_data['data'])
+        try:
+            json_data['data'] = json.dumps(json_data['data'])
+        except TypeError:
+            return False
+    return True
 
 
 def ingest_data(request, model, fields, json_customizer=None):
@@ -50,12 +58,13 @@ def ingest_data(request, model, fields, json_customizer=None):
         return True
 
     for json_entry in payload:
+        custom_success = True
         if json_customizer is not None:
-            json_customizer(json_entry)
+            custom_success = json_customizer(json_entry)
 
         populated_form = form(data=json_entry)
 
-        if valid_json_fields(fields, json_entry) and populated_form.is_valid():
+        if valid_json_fields(fields, json_entry) and populated_form.is_valid() and custom_success:
             received_data.append(populated_form)
         else:
             error_msg = 'RPCS Backend Server: Data push denied -- invalid payload. \n\n' + \

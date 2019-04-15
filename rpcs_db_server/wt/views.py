@@ -6,7 +6,7 @@ from wt.models import Patient, Caregiver, Safezone
 
 @csrf_exempt
 def patient(request):
-    if not authorized(request, None):
+    if not authorized(request, "wt"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('location', 'timestamp', 'patient_id')
@@ -19,7 +19,7 @@ def patient(request):
 
 @csrf_exempt
 def caregiver(request):
-    if not authorized(request, None):
+    if not authorized(request, "wt"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('location', 'timestamp', 'caregiver_id')
@@ -32,7 +32,7 @@ def caregiver(request):
 
 @csrf_exempt
 def safezone(request):
-    if not authorized(request, None):
+    if not authorized(request, "wt"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('location', 'radius', 'patient_id')

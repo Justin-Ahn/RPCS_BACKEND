@@ -8,7 +8,7 @@ from watch.models import Patient, Event
 
 @csrf_exempt
 def patient(request):
-    if not authorized(request, None):
+    if not authorized(request, "watch"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_name', 'patient_id', 'event', 'event_id')
@@ -22,7 +22,7 @@ def patient(request):
 
 @csrf_exempt
 def events(request):
-    if not authorized(request, None):
+    if not authorized(request, "watch"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('event_id', 'event_description', 'event_category')

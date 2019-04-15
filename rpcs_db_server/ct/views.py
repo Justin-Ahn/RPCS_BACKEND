@@ -8,7 +8,7 @@ from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_in
 
 @csrf_exempt
 def patient_profile(request):
-    if not authorized(request, None):
+    if not authorized(request, "ct"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_id', 'name', 'age', 'gender', 'doctor', 'medication', 'stage', 'notes')
@@ -22,7 +22,7 @@ def patient_profile(request):
     
 @csrf_exempt
 def patient_incidents(request):
-    if not authorized(request, None):
+    if not authorized(request, "ct"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_id', 'incident_id', 'timestamp', 'pulse_rate', 'respiratory_rate', 'blood_pressure',
@@ -37,7 +37,7 @@ def patient_incidents(request):
 
 @csrf_exempt
 def patient_trends(request):
-    if not authorized(request, None):
+    if not authorized(request, "ct"):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_id', 'test_score', 'num_falls', 'num_injuries', 'weight', 'body_fat_percentage')
