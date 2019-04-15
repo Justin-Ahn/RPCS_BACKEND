@@ -21,11 +21,10 @@ def authorized(request, action):
     # A really bad hack for permissions but hopefully this will suffice. Permissions currently depend on parsing
     # username & seeing that it corresponds with the api endpoint the user is hitting
     if user is not None:
-        if request.method == "GET" and "readonly" in username:
-            return True
-        return action in username
-    else:
-        return False
+        return user.is_superuser or \
+               request.method == "GET" and "readonly" in username or \
+               action in username
+    return False
 
 
 def json_timestamp_customizer(json_data):
