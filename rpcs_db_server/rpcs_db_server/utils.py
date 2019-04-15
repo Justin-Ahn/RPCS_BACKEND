@@ -17,7 +17,7 @@ def authorized(request, action):
    
     user = authenticate(username=username, password=password)
     
-    if user is not None:       
+    if user is not None:
         return True
         #name = user.get_username()
         #Need to actually add permissions & check permissions
@@ -32,9 +32,11 @@ def json_timestamp_customizer(json_data):
         else:
             json_data['timestamp'] = datetime.strptime(json_data['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
 
+
 def json_j2str_customizer(json_data):
     if 'data' in json_data:
         json_data['data'] = json.dumps(json_data['data'])
+
 
 def ingest_data(request, model, fields, json_customizer=None):
     payload = json.loads(request.body.decode())
@@ -56,7 +58,12 @@ def ingest_data(request, model, fields, json_customizer=None):
         if valid_json_fields(fields, json_entry) and populated_form.is_valid():
             received_data.append(populated_form)
         else:
-            return HttpResponse('RPCS Backend Server: Data push denied -- invalid params.', status=400)
+            error_msg = 'RPCS Backend Server: Data push denied -- invalid payload.' + \
+                        'Both conditions need to be met -- \n' + \
+                        'All Json fields are present: ' + str(valid_json_fields(fields, json_entry)) + '\n' + \
+                        'The Json data should be valid. Errors: ' + str(populated_form.errors.as_data())
+
+            return HttpResponse(error_msg, status=400)
 
     for data_entry in received_data:
         data_entry.save()
@@ -69,7 +76,7 @@ def ingest_data(request, model, fields, json_customizer=None):
 def return_data(request, model, param):
     target = request.GET.get(param, '')
     try:
-        pid_to_get = int(target)
+        pid_to_get = int(target)  # pid => patient_id, not process id
     except ValueError:
         if target == '':
             pid_to_get = None
