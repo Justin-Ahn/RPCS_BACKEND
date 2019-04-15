@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 
+# Technically this file shouldn't be a part of the git repo... 
 groups = ["ct", "ga", "hs", "stm", "watch", "wt", "readonly"]
 for user in groups:
-    new_user = User(username=user + "_user", password='rpcs_' + user + '2019')
+    new_user = User.objects.create_user(user + "_user", password='rpcs_' + user + '2019')
     new_user.save()
 
 
