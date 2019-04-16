@@ -24,7 +24,7 @@ def caregiver(request):
 
     my_fields = ('location', 'timestamp', 'caregiver_id')
     if request.method == "GET":
-        return return_data(request, Caregiver, 'patient_id')
+        return return_data(request, Caregiver, 'caregiver_id')
     elif request.method == "POST":
         return ingest_data(request, Caregiver, my_fields, json_customizer=json_timestamp_customizer)
     else:
