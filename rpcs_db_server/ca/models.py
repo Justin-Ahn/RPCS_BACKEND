@@ -40,3 +40,14 @@ class Phys_incidents(models.Model):
     blood_pressure = models.FloatField()
     incident_type = models.CharField(max_length=200)
     recording = models.CharField(max_length=200)
+
+class Sleep_trend(models.Model):
+    patient_id = models.IntegerField()
+    date = models.DateField()
+    hours_slept = models.FloatField(default=0)
+    hours_deep_sleep = models.FloatField(default=0)
+    hours_light_sleep = models.FloatField(default=0)
+    hours_in_bed = models.FloatField(default=0)
+    num_wake_up = models.IntegerField(default=0)
+    num_get_out_of_bed = models.IntegerField(default=0)
+    num_go_to_bathroom = models.IntegerField(default=0)
