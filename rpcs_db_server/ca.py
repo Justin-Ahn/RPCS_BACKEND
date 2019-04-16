@@ -108,8 +108,8 @@ def update_night_br_usage(connection, cursor, timestamp):
     cursor.execute(select_query, (curdate,))
     record = cursor.fetchone()
     if record is None:
-        insert_query = "insert into ca_sleep_trend (patient_id, date, hours_slept, hours_deep_sleep, hours_light_sleep, hours_in_bed, num_wake_up, num_get_out_of_bed, num_go_to_bathroom) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        record_to_insert = (1, curdate, 0, 0, 0, 0, 0, 0, 1)
+        insert_query = "insert into ca_sleep_trend (patient_id, date, num_go_to_bathroom) VALUES (%s, %s, %s)"
+        record_to_insert = (1, curdate, 1)
         cursor.execute(insert_query, record_to_insert)
     else:
         update_query = "update ca_sleep_trend set num_go_to_bathroom = num_go_to_bathroom + 1 where patient_id = 1 and date = %s"

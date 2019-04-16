@@ -44,13 +44,13 @@ class Phys_incidents(models.Model):
 class Sleep_trend(models.Model):
     patient_id = models.IntegerField()
     date = models.DateField()
-    hours_slept = models.FloatField(default=0)
-    hours_deep_sleep = models.FloatField(default=0)
-    hours_light_sleep = models.FloatField(default=0)
-    hours_in_bed = models.FloatField(default=0)
-    num_wake_up = models.IntegerField(default=0)
-    num_get_out_of_bed = models.IntegerField(default=0)
-    num_go_to_bathroom = models.IntegerField(default=0)
+    hours_slept = models.FloatField(blank=True, null=True)
+    hours_deep_sleep = models.FloatField(blank=True, null=True)
+    hours_light_sleep = models.FloatField(blank=True, null=True)
+    hours_in_bed = models.FloatField(blank=True, null=True)
+    num_wake_up = models.IntegerField(blank=True, null=True)
+    num_get_out_of_bed = models.IntegerField(blank=True, null=True)
+    num_go_to_bathroom = models.IntegerField(blank=True, null=True)
 
 class Incident_summary(models.Model):
     patient_id = models.IntegerField()
