@@ -23,6 +23,14 @@ def main():
             connection.close()
             print('PostgreSQL connection is closed')
 
+def ct_analysis(connection, cursor):
+    select_query = "select * from ct_incident"
+    cursor.execute(select_query)
+    print('Selecting rows from ct_incident table using cursor.fetchall')
+    ct_incidents = cursor.fetchall()
+    for row in ct_incidents:
+        update_incident(connection, cursor, row[7], row[3])
+
 def hs_analysis(connection, cursor):
     # home sensor: determine room entry
     hs_br_flag = False
@@ -74,6 +82,25 @@ def hs_analysis(connection, cursor):
         print('data = ', row[5])
         print('event_id = ', row[6], '\n')
 
+def update_incident(connection, cursor, incident_type, timestamp):
+    #TODO: only hallucination in incident summary?
+    if incident_type != 'hallucination':
+        return
+    select_query = "select * from ca_incident_summary where date = %s"
+    curdate = timestamp.date()
+    cursor.execute(select_query, (curdate,))
+    record = cursor.fetchone()
+    if record is None:
+        insert_query = "insert into ca_incident_summary (patient_id, date, num_hallucination) VALUES (%s, %s, %s)"
+        record_to_insert = (1, curdate, 1)
+        cursor.execute(insert_query, record_to_insert)
+    else:
+        update_query = "update ca_incident_summary set num_hallucination = num_hallucination + 1 where patient_id = 1 and date = %s"
+        cursor.execute(update_query, (curdate,))
+    connection.commit()
+    print('Successfully update incident summary-hallucination')
+
+
 def update_night_br_usage(connection, cursor, timestamp):
     select_query = "select * from ca_sleep_trend where date = %s"
     curdate = timestamp.date()
@@ -83,7 +110,6 @@ def update_night_br_usage(connection, cursor, timestamp):
         insert_query = "insert into ca_sleep_trend (patient_id, date, hours_slept, hours_deep_sleep, hours_light_sleep, hours_in_bed, num_wake_up, num_get_out_of_bed, num_go_to_bathroom) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         record_to_insert = (1, curdate, 0, 0, 0, 0, 0, 0, 1)
         cursor.execute(insert_query, record_to_insert)
-        connection.commit()
     else:
         update_query = "update ca_sleep_trend set num_go_to_bathroom = num_go_to_bathroom + 1 where patient_id = 1 and date = %s"
         cursor.execute(update_query, (curdate,))

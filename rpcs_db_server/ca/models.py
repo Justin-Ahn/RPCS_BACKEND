@@ -51,3 +51,12 @@ class Sleep_trend(models.Model):
     num_wake_up = models.IntegerField(default=0)
     num_get_out_of_bed = models.IntegerField(default=0)
     num_go_to_bathroom = models.IntegerField(default=0)
+
+class Incident_summary(models.Model):
+    patient_id = models.IntegerField()
+    date = models.DateField()
+    num_hallucinations = models.IntegerField(blank=True, null=True)
+    num_ltm_lapse = models.IntegerField(blank=True, null=True)
+    num_stm_lapse = models.IntegerField(blank=True, null=True)
+    num_injury = models.IntegerField(blank=True, null=True)
+    num_wandering = models.IntegerField(blank=True, null=True)
