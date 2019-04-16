@@ -6,10 +6,16 @@ import pytz
 # query helper string to filter data in the night
 utc = pytz.utc
 filter_night = "extract (hour from timestamp) >= 0 and extract (hour from timestamp) <= 7"
+night_start = datetime.time(0, 0, 0)
+night_end = datetime.time(7, 0, 0)
+
 def main():
     try:
         connection = psycopg2.connect(user='rpcs', password='rpcs2019', host='localhost', port='', database='rpcs')
         cursor = connection.cursor()
+    except (Exception, psycopg2.Error) as error:
+        print('Error while fetching data from postgreSQL', error)
+    else:
         # home sensor: determine room entry
         hs_br_flag = False
         hs_br_rfid = False
@@ -31,7 +37,9 @@ def main():
                 if row[3] == 'rfid' and 'BROKEN' in row[5]:
                     if hs_br_motn and (row[4] - hs_br_entry_ts).total_seconds() < 200:
                         hs_br_flag = True
-                        # insert bathroom entry into table
+                        # if at night, add bathroom entry into sleep_trend table
+                        if check_night(hs_br_entry_ts):
+                            update_night_br_usage(connection, cursor, hs_br_entry_ts)
                         print("New entry at: ", hs_br_entry_ts)
                     else:
                         hs_br_entry_ts = row[4]
@@ -39,7 +47,9 @@ def main():
                 if row[3] == 'motion' and 'MOTION_STARTED' in row[5]:
                     if hs_br_rfid and (row[4] - hs_br_entey_ts).total_seconds() < 200:
                         hs_br_flag = True
-                        # insert bathroom entry into table
+                        # if at night, add bathroom entry into sleep_trend table
+                        if check_night(hs_br_entry_ts):
+                            update_night_br_usage(connection, cursor, hs_br_entry_ts)
                         print("New entry at: ", hs_br_entry_ts)
                     else:
                         hs_br_entry_ts = row[4]
@@ -56,13 +66,33 @@ def main():
             print('timestamp = ', row[4])
             print('data = ', row[5])
             print('event_id = ', row[6], '\n')
-    except (Exception, psycopg2.Error) as error:
-        print('Error while fetching data from postgreSQL', error)
     finally:
         if connection:
             cursor.close()
             connection.close()
             print('PostgreSQL connection is closed')
+
+def update_night_br_usage(connection, cursor, timestamp):
+    select_query = "select * from ca_sleep_trend where date = %s"
+    curdate = timestamp.date()
+    cursor.execute(select_query, (curdate,))
+    record = cursor.fetchone()
+    if record is None:
+        insert_query = "insert into ca_sleep_trend (patient_id, date, hours_slept, hours_deep_sleep, hours_light_sleep, hours_in_bed, num_wake_up, num_get_out_of_bed, num_go_to_bathroom) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        record_to_insert = (1, curdate, 0, 0, 0, 0, 0, 0, 1)
+        cursor.execute(insert_query, record_to_insert)
+        connection.commit()
+    else:
+        update_query = "update ca_sleep_trend set num_go_to_bathroom = num_go_to_bathroom + 1 where patient_id = 1 and date = %s"
+        cursor.execute(update_query, (curdate,))
+    connection.commit()
+    print('Added one sleep trend record: ', cursor.fetchone())
+
+def check_night(timestamp):
+    return night_start <= timestamp.time() <= night_end
+
+def get_date(timestamp):
+    return timestamp.date()
 
 if __name__ == "__main__":
     main()
