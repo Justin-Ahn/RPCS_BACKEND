@@ -16,6 +16,7 @@ def main():
     except (Exception, psycopg2.Error) as error:
         print('Error while fetching data from postgreSQL', error)
     else:
+        ct_analysis(connection, cursor)
         hs_analysis(connection, cursor)
     finally:
         if connection:
@@ -91,14 +92,14 @@ def update_incident(connection, cursor, incident_type, timestamp):
     cursor.execute(select_query, (curdate,))
     record = cursor.fetchone()
     if record is None:
-        insert_query = "insert into ca_incident_summary (patient_id, date, num_hallucination) VALUES (%s, %s, %s)"
+        insert_query = "insert into ca_incident_summary (patient_id, date, num_hallucinations) VALUES (%s, %s, %s)"
         record_to_insert = (1, curdate, 1)
         cursor.execute(insert_query, record_to_insert)
     else:
-        update_query = "update ca_incident_summary set num_hallucination = num_hallucination + 1 where patient_id = 1 and date = %s"
+        update_query = "update ca_incident_summary set num_hallucinations = num_hallucinations + 1 where patient_id = 1 and date = %s"
         cursor.execute(update_query, (curdate,))
     connection.commit()
-    print('Successfully update incident summary-hallucination')
+    print('Successfully update incident summary-hallucinations')
 
 
 def update_night_br_usage(connection, cursor, timestamp):
