@@ -18,6 +18,7 @@ class CreateCaregiverProfile(graphene.Mutation):
     password = graphene.String()
     patient_id = graphene.Int()
     schedule = graphene.String()
+    caregiver_id = graphene.Int()
 
     class Arguments:
         name = graphene.String()
@@ -25,12 +26,13 @@ class CreateCaregiverProfile(graphene.Mutation):
         password = graphene.String()
         patient_id = graphene.Int()
         schedule = graphene.String()
+        caregiver_id = graphene.Int()
 
-    def mutate(self, info, name, username, password, patient_id, schedule):
+    def mutate(self, info, name, username, password, patient_id, schedule, caregiver_id):
         user = info.context.user or None
 
         cg_profile = CaregiverProfile(name=name, username=username,
-            password=password, patient_id=patient_id, schedule=schedule)
+            password=password, patient_id=patient_id, schedule=schedule, caregiver_id=caregiver_id)
         cg_profile.save()
 
         return CreateCaregiverProfile(
@@ -38,7 +40,8 @@ class CreateCaregiverProfile(graphene.Mutation):
             username = username,
             password = password,
             patient_id = patient_id,
-            schedule = schedule)
+            schedule = schedule,
+            caregiver_id = caregiver_id)
 
 class CreateDoctorProfile(graphene.Mutation):
     name = graphene.String()
@@ -46,6 +49,7 @@ class CreateDoctorProfile(graphene.Mutation):
     password = graphene.String()
     patient_id = graphene.Int()
     appointment = graphene.String()
+    doctor_id = graphene.Int()
 
     class Arguments:
         name = graphene.String()
@@ -53,12 +57,13 @@ class CreateDoctorProfile(graphene.Mutation):
         password = graphene.String()
         patient_id = graphene.Int()
         appointment = graphene.String()
+        doctor_id = graphene.Int()
 
-    def mutate(self, info, name, username, password, patient_id, appointment):
+    def mutate(self, info, name, username, password, patient_id, appointment, doctor_id):
         user = info.context.user or None
         
         doc_profile = DoctorProfile(name=name, username=username,
-            password=password, patient_id=patient_id, appointment=appointment)
+            password=password, patient_id=patient_id, appointment=appointment, doctor_id=doctor_id)
         doc_profile.save()
 
         return CreateDoctorProfile(
@@ -66,7 +71,8 @@ class CreateDoctorProfile(graphene.Mutation):
             username = username,
             password = password,
             patient_id = patient_id,
-            appointment = appointment)
+            appointment = appointment,
+            doctor_id = doctor_id)
 
 class Query(graphene.ObjectType):
 	#results = graphene.List(StmType, id = graphene.Int())

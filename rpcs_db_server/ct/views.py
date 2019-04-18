@@ -4,21 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request, json_timestamp_customizer
 
 
-# Create your views here.
-
-@csrf_exempt
-def patient_profile(request):
-    if not authorized(request, "ct"):
-        return HttpResponse('Unauthorized', status=401)
-
-    my_fields = ('patient_id', 'name', 'age', 'gender', 'doctor', 'medication', 'stage', 'notes')
-    if request.method == "GET":
-        return return_data(request, Profile, 'patient_id')
-    elif request.method == "POST":
-        return ingest_data(request, Profile, my_fields)
-    else:
-        return handle_invalid_request(request)
-
+# Create your views here
     
 @csrf_exempt
 def patient_incidents(request):
