@@ -8,16 +8,16 @@ class PatientProfile(models.Model):
     age = models.IntegerField()
     gender = models.CharField(max_length=200)
     doctor = models.IntegerField()
-    medication = models.CharField(max_length=200)
+    medication = models.CharField(max_length=500)
     stage = models.CharField(max_length=200)
-    notes = models.CharField(max_length=200)
+    notes = models.CharField(max_length=800)
 
 class CaregiverProfile(models.Model):
     name = models.CharField(max_length=200)
     username = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
     patient_id = models.IntegerField()
-    schedule = models.CharField(max_length=200)
+    schedule = models.CharField(max_length=800)
     caregiver_id = models.IntegerField()
 
 class DoctorProfile(models.Model):
@@ -25,5 +25,5 @@ class DoctorProfile(models.Model):
     username = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
     patient_id = models.IntegerField()
-    appointment = models.CharField(max_length=200)
+    appointment = models.CharField(max_length=800)
     doctor_id = models.IntegerField()
