@@ -18,6 +18,11 @@ from django.urls import path, include
 from rpcs_db_server import views
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from rpcs_db_server import schema
+
+class PrivateGraphQLView(LoginRequiredMixin, GraphQLView):
+    pass
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +33,8 @@ urlpatterns = [
     path('ga/', include("ga.urls")),
     path('watch/', include("watch.urls")),
     path('ct/', include("ct.urls")),
+    path('int/', include("int.urls")),
+    path('cg_doc/', include("cg_doc.urls")),
     path('health', views.health),
     path('auth', views.auth),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
