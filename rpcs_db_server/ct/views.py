@@ -1,4 +1,4 @@
-from ct.models import Profile, Incident, Trend
+from ct.models import Incident, Trend
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request, json_timestamp_customizer
