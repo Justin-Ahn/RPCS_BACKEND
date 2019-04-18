@@ -4,7 +4,6 @@ from graphene_django import DjangoObjectType
 #from stm.models import Results
 
 import stm.schema
-import cg_doc.schema
 import int.schema
 
 #class ResultsType(DjangoObjectType):

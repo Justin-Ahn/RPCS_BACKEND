@@ -34,7 +34,6 @@ urlpatterns = [
     path('watch/', include("watch.urls")),
     path('ct/', include("ct.urls")),
     path('int/', include("int.urls")),
-    path('cg_doc/', include("cg_doc.urls")),
     path('health', views.health),
     path('auth', views.auth),
     path('graphql/', csrf_exempt(GraphQLView.as_view(graphiql=True))),
