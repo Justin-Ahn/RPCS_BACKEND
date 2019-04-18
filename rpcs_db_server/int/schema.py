@@ -110,7 +110,7 @@ class CreatePatientProfile(graphene.Mutation):
         p_profile.save()
 
         return CreatePatientProfile(
-            patient_id=patient_id, name=name_, age=age, gender=gender, doctor=doctor, medication=medication, \
+            patient_id=patient_id, name=name_, age=age, gender=gender, doctor=doctor, medication=medication,
             stage=stage, notes=notes)
 
 
@@ -119,6 +119,7 @@ class Query(graphene.ObjectType):
 	#results = graphene.List(StmType, id = graphene.Int())
     caregiver_profile = graphene.List(CaregiverProfileType, un = graphene.String())
     doctor_profile = graphene.List(DoctorProfileType, un = graphene.String())
+    patient_profile = graphene.List(PatientProfileType, un = graphene.String())
 	
     def resolve_caregiver_profile(self, info, un=None, **kwargs):
         if un:
