@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'watch',
     'ct',
     'int',
+    'cg_doc',
 ]
 
 MIDDLEWARE = [

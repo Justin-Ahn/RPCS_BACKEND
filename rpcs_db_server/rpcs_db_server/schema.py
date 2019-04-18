@@ -4,33 +4,22 @@ from graphene_django import DjangoObjectType
 #from stm.models import Results
 
 import stm.schema
+import cg_doc.schema
+import int.schema
 
 #class ResultsType(DjangoObjectType):
 #    class Meta:
 #        model = Results
 
 
-class Query(stm.schema.Query, graphene.ObjectType):
+class Query(stm.schema.Query, int.schema.Query, graphene.ObjectType):
     #links = graphene.List(ResultsType)
 	pass
 
     #def resolve_links(self, info, **kwargs):
     #    return Results.objects.all()
 
-class Mutation(stm.schema.Mutation, graphene.ObjectType):
+class Mutation(stm.schema.Mutation, int.schema.Mutation, graphene.ObjectType):
 	pass
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
-from stm.models import Results
-
-
-class ResultsType(DjangoObjectType):
-    class Meta:
-        model = Results
-
-
-class Query(graphene.ObjectType):
-    links = graphene.List(ResultsType)
-
-    def resolve_links(self, info, **kwargs):
-        return Results.objects.all()

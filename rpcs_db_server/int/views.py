@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from int.models import CaregiverProfile, DoctorProfile
 from django.views.decorators.csrf import csrf_exempt
@@ -8,7 +9,7 @@ from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_in
 @csrf_exempt
 def caregiver_profile(request):
     if not authorized(request, "int"):
-        return HttpResponse('Unauthorized', status=41)
+        return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('name', 'username', 'password', 'patient_id', 'schedule')
     if request.method == "GET":
