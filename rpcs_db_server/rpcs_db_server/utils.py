@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.core import serializers
 from django.http import HttpResponse
@@ -24,6 +23,8 @@ def authorized(request, action):
     # username & seeing that it corresponds with the api endpoint the user is hitting
     if user is not None:
         return user.is_superuser or \
+        return action is None or \
+               user.is_superuser or \
                request.method == "GET" and "readonly" in username or \
                action in username
     return False

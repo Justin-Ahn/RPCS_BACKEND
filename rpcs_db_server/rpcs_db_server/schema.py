@@ -21,3 +21,16 @@ class Mutation(stm.schema.Mutation, graphene.ObjectType):
 	pass
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
+from stm.models import Results
+
+
+class ResultsType(DjangoObjectType):
+    class Meta:
+        model = Results
+
+
+class Query(graphene.ObjectType):
+    links = graphene.List(ResultsType)
+
+    def resolve_links(self, info, **kwargs):
+        return Results.objects.all()
