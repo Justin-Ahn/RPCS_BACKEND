@@ -84,7 +84,7 @@ class CreateDoctorProfile(graphene.Mutation):
 
 class CreatePatientProfile(graphene.Mutation):
     patient_id = graphene.Int()
-    name = graphene.String()
+    name_ = graphene.String()
     age = graphene.Int()
     gender = graphene.String()
     doctor = graphene.Int()
@@ -94,7 +94,7 @@ class CreatePatientProfile(graphene.Mutation):
 
     class Arguments:
         patient_id = graphene.Int()
-        name = graphene.String()
+        name_ = graphene.String()
         age = graphene.Int()
         gender = graphene.String()
         doctor = graphene.Int()
@@ -102,16 +102,16 @@ class CreatePatientProfile(graphene.Mutation):
         stage = graphene.String()
         notes = graphene.String()
 
-    def mutate(self, info, name, patient_id, name, age, gender, doctor, medication, stage, notes):
+    def mutate(self, info, name, patient_id, name_, age, gender, doctor, medication, stage, notes):
         user = info.context.user or None
 
-        p_profile = PatientProfile(patient_id=patient_id, name=name, age=age, gender=gender, doctor=doctor,
-                                      medication=medication, stage=stage, notes=notes)
+        p_profile = PatientProfile(patient_id=patient_id, name=name_, age=age, gender=gender, doctor=doctor,
+                                   medication=medication, stage=stage, notes=notes)
         p_profile.save()
 
         return CreatePatientProfile(
-            patient_id=patient_id, name=name, age=age, gender=gender, doctor=doctor, medication=medication, stage=stage,
-            notes=notes)
+            patient_id=patient_id, name=name_, age=age, gender=gender, doctor=doctor, medication=medication, \
+            stage=stage, notes=notes)
 
 
 
