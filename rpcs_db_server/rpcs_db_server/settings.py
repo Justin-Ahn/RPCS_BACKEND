@@ -25,7 +25,7 @@ SECRET_KEY = 't(d3=si!f)!9%g@!adsk!6acce*l@de%)0c(2pk7=t&mw4e)(6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['kinect.andrew.cmu.edu', 'localhost']
+ALLOWED_HOSTS = ['kinect.andrew.cmu.edu']
 
 
 # Application definition
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'ga',
     'watch',
     'ct',
+    'int',
 ]
 
 MIDDLEWARE = [
@@ -82,19 +83,20 @@ WSGI_APPLICATION = 'rpcs_db_server.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-	'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-		'PORT': '8001',
-    }
+	#'default': {
+    #    'ENGINE': 'django.db.backends.sqlite3',
+    #    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #		'PORT': '8001',
+    #}
 
-    #'default': {
-    #    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #    'NAME': 'rpcs',
-    #    'USER': 'rpcs',
-    #    'PASSWORD': 'rpcs2019',
-    #    'HOST': 'localhost',
-    #    'PORT': '5432',
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'rpcs',
+        'USER': 'rpcs',
+        'PASSWORD': 'rpcs2019',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
     #'default': {
     #    'ENGINE': 'django.db.backends.postgresql_psycopg2',
     #    'NAME': 'rpcs',
