@@ -22,7 +22,7 @@ def caregiver_profile(request):
     if request.method == "GET":
         return return_data(request, CaregiverProfile, 'caregiver_id')
     elif request.method == "POST":
-        return ingest_data(request, CaregiverProfile, my_fields, json_customizer=caregiver_pk_hack())
+        return ingest_data(request, CaregiverProfile, my_fields, json_customizer=caregiver_pk_hack)
     else:
         return handle_invalid_request(request)
 
