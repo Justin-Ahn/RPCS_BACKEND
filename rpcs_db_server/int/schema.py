@@ -44,12 +44,12 @@ class CreateCaregiverProfile(graphene.Mutation):
         cg_profile.save()
 
         return CreateCaregiverProfile(
-            name = name,
-            username = username,
-            password = password,
-            patient_id = patient_id,
-            schedule = schedule,
-            caregiver_id = caregiver_id)
+            name = cg_profile.name,
+            username = cg_profile.username,
+            password = cg_profile.password,
+            patient_id = cg_profile.patient_id,
+            schedule = cg_profile.schedule,
+            caregiver_id = cg_profile.caregiver_id)
 
 class CreateDoctorProfile(graphene.Mutation):
     name = graphene.String()
@@ -76,11 +76,11 @@ class CreateDoctorProfile(graphene.Mutation):
 
         return CreateDoctorProfile(
             name = name,
-            username = username,
-            password = password,
-            patient_id = patient_id,
-            appointment = appointment,
-            doctor_id = doctor_id)
+            username = doc_profile.username,
+            password = doc_profile.password,
+            patient_id = doc_profile.patient_id,
+            appointment = doc_profile.appointment,
+            doctor_id = doc_profile.doctor_id)
 
 class CreatePatientProfile(graphene.Mutation):
     patient_id = graphene.Int()
@@ -110,8 +110,14 @@ class CreatePatientProfile(graphene.Mutation):
         p_profile.save()
 
         return CreatePatientProfile(
-            patient_id=patient_id, name=name, age=age, gender=gender, doctor=doctor, medication=medication,
-            stage=stage, notes=notes)
+            patient_id=p_profile.patient_id, 
+            name=p_profile.name, 
+            age=p_profile.age, 
+            gender=p_profile.gender, 
+            doctor=p_profile.doctor, 
+            medication=p_profile.medication,
+            stage=p_profile.stage, 
+            notes=p_profile.notes)
 
 
 
