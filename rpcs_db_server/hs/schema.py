@@ -27,11 +27,12 @@ class CreateEvents(graphene.Mutation):
     def mutate(self, info, event_type, sensor_id, sensor_type, timestamp, data, event_id):
         user = info.context.user or None
 
-        events = Events(sensor_id=sensor_id, sensor_type=sensor_type,
-            timestamp=timestamp, data=data, event_id=event_id)
+        events = Events(event_type=event_type, sensor_id=sensor_id, 
+            sensor_type=sensor_type, timestamp=timestamp, data=data, event_id=event_id)
         events.save()
 
         return CreateEvents(
+            event_type = events.event_type,
             sensor_id = events.sensor_id,
             sensor_type = events.sensor_type,
             timestamp = events.timestamp,
