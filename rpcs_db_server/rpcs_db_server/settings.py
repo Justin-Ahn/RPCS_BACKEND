@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'graphene_django',
+    'graphene_django',
+    'corsheaders',
     'wt',
     'stm',
     'hs',
@@ -56,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'rpcs_db_server.urls'
@@ -153,3 +155,5 @@ STATIC_URL = '/static/'
 GRAPHENE = {
 	'SCHEMA': 'rpcs_db_server.schema.schema',
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
