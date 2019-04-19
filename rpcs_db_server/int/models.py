@@ -7,7 +7,7 @@ class PatientProfile(models.Model):
     name = models.CharField(max_length=200)
     age = models.IntegerField()
     gender = models.CharField(max_length=200)
-    doctor = models.IntegerField()
+    doctor = models.CharField(max_length=200)
     medication = models.CharField(max_length=500)
     stage = models.CharField(max_length=200)
     notes = models.CharField(max_length=800)
