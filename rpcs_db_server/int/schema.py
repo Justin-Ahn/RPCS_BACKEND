@@ -84,42 +84,41 @@ class CreateDoctorProfile(graphene.Mutation):
 
 class CreatePatientProfile(graphene.Mutation):
     patient_id = graphene.Int()
-    name_ = graphene.String()
+    name = graphene.String()
     age = graphene.Int()
     gender = graphene.String()
-    doctor = graphene.Int()
+    doctor = graphene.String()
     medication = graphene.String()
     stage = graphene.String()
     notes = graphene.String()
 
     class Arguments:
         patient_id = graphene.Int()
-        name_ = graphene.String()
+        name = graphene.String()
         age = graphene.Int()
         gender = graphene.String()
-        doctor = graphene.Int()
+        doctor = graphene.String()
         medication = graphene.String()
         stage = graphene.String()
         notes = graphene.String()
 
-    def mutate(self, info, name, patient_id, name_, age, gender, doctor, medication, stage, notes):
+    def mutate(self, info, name, patient_id, age, gender, doctor, medication, stage, notes):
         user = info.context.user or None
 
-        p_profile = PatientProfile(patient_id=patient_id, name=name_, age=age, gender=gender, doctor=doctor,
+        p_profile = PatientProfile(patient_id=patient_id, name=name, age=age, gender=gender, doctor=doctor,
                                    medication=medication, stage=stage, notes=notes)
         p_profile.save()
 
         return CreatePatientProfile(
-            patient_id=patient_id, name=name_, age=age, gender=gender, doctor=doctor, medication=medication,
+            patient_id=patient_id, name=name, age=age, gender=gender, doctor=doctor, medication=medication,
             stage=stage, notes=notes)
 
 
 
 class Query(graphene.ObjectType):
-	#results = graphene.List(StmType, id = graphene.Int())
     caregiver_profile = graphene.List(CaregiverProfileType, un = graphene.String())
     doctor_profile = graphene.List(DoctorProfileType, un = graphene.String())
-    patient_profile = graphene.List(PatientProfileType, un = graphene.String())
+    patient_profile = graphene.List(PatientProfileType, patient_id = graphene.Int())
 	
     def resolve_caregiver_profile(self, info, un=None, **kwargs):
         if un:
@@ -130,10 +129,20 @@ class Query(graphene.ObjectType):
 
         return CaregiverProfile.objects.all()
 
-    def resolve_doctor_profile(self, info, username=None, **kwargs):
+    def resolve_doctor_profile(self, info, un=None, **kwargs):
+        if un:
+            filter = (
+                Q(username=un)
+            )
+            return DoctorProfile.objects.filter(filter)
         return DoctorProfile.objects.all()
 
-    def resolve_patient_profile(self, info, username=None, **kwargs):
+    def resolve_patient_profile(self, info, id=-1, **kwargs):
+        if id >= 0:
+            filter = (
+                Q(patient_id=id)
+            )
+            return PatientProfile.objects.filter(filter)
         return PatientProfile.objects.all()
 
 	#def resolve_results(self, info, id=-1, **kwargs):
