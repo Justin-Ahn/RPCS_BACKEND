@@ -7,4 +7,4 @@ class Events(models.Model):
     sensor_type = models.CharField(max_length=200)
     timestamp = models.DateTimeField()
     data = models.CharField(max_length=5000)
-    event_id = models.IntegerField()
+    event_id = models.AutoField(primary_key=True)

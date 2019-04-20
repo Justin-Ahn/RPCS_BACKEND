@@ -17,7 +17,7 @@ def events(request):
         success2 = json_j2str_customizer(json_entry)
         return success1 and success2
 
-    my_fields = ('event_type', 'sensor_id', 'sensor_type', 'data', 'timestamp', 'event_id')
+    my_fields = ('event_type', 'sensor_id', 'sensor_type', 'data', 'timestamp')
     if request.method == "GET":
         return return_data(request, Events, 'patient_id')
     elif request.method == "POST":
