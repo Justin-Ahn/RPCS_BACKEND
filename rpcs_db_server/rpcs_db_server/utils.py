@@ -53,6 +53,8 @@ def ingest_data(request, model, fields, json_customizer=None):
         payload = json.loads(request.body.decode())
     except json.decoder.JSONDecodeError:
         return HttpResponse(response_prefix + "Not a valid Json!", status=400)
+    if not isinstance(payload, list):
+        return HttpResponse(response_prefix + "Requires payloads to be a JSON array", status=400)
 
     received_data = []
     form = modelform_factory(model, fields=fields)
