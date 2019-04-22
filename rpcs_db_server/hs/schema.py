@@ -42,7 +42,7 @@ class CreateEvents(graphene.Mutation):
 class Query(graphene.ObjectType):
 	events = graphene.List(EventsType, id = graphene.Int())
 	
-	def resolve_results(self, info, id=-1, **kwargs):
+	def resolve_events(self, info, id=-1, **kwargs):
 		if id>=0:
 			filter = (
 				Q(event_id=id)
