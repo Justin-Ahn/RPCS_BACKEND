@@ -124,7 +124,7 @@ class CreatePatientProfile(graphene.Mutation):
 class Query(graphene.ObjectType):
     caregiver_profile = graphene.List(CaregiverProfileType, un = graphene.String())
     doctor_profile = graphene.List(DoctorProfileType, un = graphene.String())
-    patient_profile = graphene.List(PatientProfileType, patient_id = graphene.Int())
+    patient_profile = graphene.List(PatientProfileType, id = graphene.Int())
 	
     def resolve_caregiver_profile(self, info, un=None, **kwargs):
         if un:
