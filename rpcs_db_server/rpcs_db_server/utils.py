@@ -98,7 +98,7 @@ def ingest_data(request, model, fields, json_customizer=None):
     return HttpResponse(response_text, status=200)
 
 
-# KV store of the query param & its corresponding filtering action
+# KV store of the query param & a tuple of (Converting user given val to required obj for comparison, filtering action)
 filter_actions = {
         "patient_id": (lambda given_param: int(given_param),
                        lambda data, patient_id: list(filter(lambda x: x["patient_id"] == patient_id, data))),
