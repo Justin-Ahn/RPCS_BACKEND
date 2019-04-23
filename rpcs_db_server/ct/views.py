@@ -13,7 +13,7 @@ def patient_incidents(request):
 
     my_fields = ('patient_id', 'incident_id', 'timestamp', 'pulse_rate', 'respiratory_rate', 'blood_pressure',
                  'incident_type', 'recording')
-    filterable_params = ['patient_id', 'incident_id']
+    filterable_params = ['patient_id', 'incident_id', 'time_start', 'time_end']
     if request.method == "GET":
         return return_data(request, Incident, filterable_params)
     elif request.method == "POST":
