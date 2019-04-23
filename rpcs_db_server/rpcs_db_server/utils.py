@@ -139,9 +139,13 @@ def return_data(request, model, query_filter_params):
             continue
         try:
             param_value = filter_actions[param][CONVERSION_ACTION](user_params)
-            response_data = filter_actions[param][FILTERING_ACTION](response_data, param_value)
         except ValueError:
             return HttpResponse(response_prefix + 'Data pull denied -- invalid query params.', status=400)
+
+        try:
+            response_data = filter_actions[param][FILTERING_ACTION](response_data, param_value)
+        except ValueError:
+            return HttpResponse(response_prefix + 'Something failed on our end... Please contact Justin', status=400)
 
     return HttpResponse(json.dumps(response_data), content_type='application/json', status=200)
 
