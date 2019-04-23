@@ -18,8 +18,9 @@ def events(request):
         return success1 and success2
 
     my_fields = ('event_type', 'sensor_id', 'sensor_type', 'data', 'timestamp')
+    filterable_params = ['patient_id', 'time_start']
     if request.method == "GET":
-        return return_data(request, Events, 'patient_id')
+        return return_data(request, Events, 'patient_id', filterable_params)
     elif request.method == "POST":
         return ingest_data(request, Events, my_fields, json_customizer=hs_customizer)
     else:

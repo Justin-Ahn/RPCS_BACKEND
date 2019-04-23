@@ -19,8 +19,9 @@ def caregiver_profile(request):
         return True
 
     my_fields = ('name', 'username', 'password', 'patient_id', 'schedule', 'caregiver_id')
+    filterable_params = ['patient_id', 'caregiver_id']
     if request.method == "GET":
-        return return_data(request, CaregiverProfile, 'caregiver_id')
+        return return_data(request, CaregiverProfile, filterable_params)
     elif request.method == "POST":
         return ingest_data(request, CaregiverProfile, my_fields, json_customizer=caregiver_pk_hack)
     else:
@@ -32,8 +33,9 @@ def doctor_profile(request):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('name', 'username', 'password', 'patient_id', 'appointment', 'doctor_id')
+    filterable_params = ['patient_id', 'doctor_id']
     if request.method == "GET":
-        return return_data(request, DoctorProfile, 'doctor_id')
+        return return_data(request, DoctorProfile, filterable_params)
     elif request.method == "POST":
         return ingest_data(request, DoctorProfile, my_fields)
     else:
@@ -45,8 +47,9 @@ def patient_profile(request):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_id', 'name', 'age', 'gender', 'doctor', 'medication', 'stage', 'notes')
+    filterable_params = ['patient_id']
     if request.method == "GET":
-        return return_data(request, PatientProfile, 'patient_id')
+        return return_data(request, PatientProfile, filterable_params)
     elif request.method == "POST":
         return ingest_data(request, PatientProfile, my_fields)
     else:

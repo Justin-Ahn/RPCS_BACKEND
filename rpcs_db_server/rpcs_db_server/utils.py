@@ -29,12 +29,20 @@ def authorized(request, action):
     return False
 
 
+# This is our spec for datetime!
+def str_2_dt(s):
+    return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
+
+
 def json_timestamp_customizer(json_data):
     if 'timestamp' in json_data:  # A disgusting hack but this will do...
         if json_data['timestamp'] is None:
             json_data['timestamp'] = datetime.now()
         else:
-            json_data['timestamp'] = datetime.strptime(json_data['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            try:
+                json_data['timestamp'] = str_2_dt(json_data['timestamp'])
+            except ValueError:
+                return False
         return True
     return False
 
@@ -85,31 +93,54 @@ def ingest_data(request, model, fields, json_customizer=None):
     for data_entry in received_data:
         data_entry.save()
 
-    response_text = response_prefix + 'Accepted ' + \
-                    str(len(received_data)) + (' entry' if len(received_data) == 1 else ' entries')
+    response_text = response_prefix + 'Accepted ' + str(len(received_data)) + (' entry' if len(received_data) == 1 else
+                                                                               ' entries')
     return HttpResponse(response_text, status=200)
 
 
-def return_data(request, model, param):
-    target = request.GET.get(param, '')
-    try:
-        pid_to_get = int(target)  # pid => patient_id, not process id
-    except ValueError:
-        if target == '':
-            pid_to_get = None
-        else:
-            return HttpResponse(response_prefix + 'Data pull denied -- invalid params.', status=400)
+# KV store of the query param & its corresponding filtering action
+filter_actions = {
+        "patient_id": (lambda given_param: int(given_param),
+                       lambda data, patient_id: list(filter(lambda x: x["patient_id"] == patient_id, data))),
 
-    all_data = serializers.serialize('json', model.objects.all())
-    data_list = json.loads(all_data)
-    mapped_list = list(map(lambda x: x['fields'], data_list))  # 'fields' -> a relic of how django processes data
+        "caregiver_id": (lambda given_param: int(given_param),
+                         lambda data, caregiver_id: list(filter(lambda x: x["caregiver_id"] == caregiver_id, data))),
 
-    if pid_to_get is not None:
-        response = list(filter(lambda x: x[param] == pid_to_get, mapped_list))
-    else:
-        response = mapped_list
+        "doctor_id": (lambda given_param: int(given_param),
+                      lambda data, doctor_id: list(filter(lambda x: x["doctor_id"] == doctor_id, data))),
 
-    return HttpResponse(json.dumps(response), content_type='application/json', status=200)
+        "event_id": (lambda given_param: int(given_param),
+                     lambda data, event_id: list(filter(lambda x: x["event_id"] == event_id, data))),
+
+        "incident_id": (lambda given_param: int(given_param),
+                        lambda data, incident_id: list(filter(lambda x: x["incident_id"] == incident_id, data))),
+
+        "time_start": (lambda given_param: str_2_dt(given_param),
+                       lambda data, time_start: list(filter(lambda x: str_2_dt(x["timestamp"]) >= time_start, data))),
+
+        "time_end": (lambda given_param: str_2_dt(given_param),
+                     lambda data, time_end: list(filter(lambda x: str_2_dt(x["timestamp"]) <= time_end, data)))
+    }
+CONVERSION_ACTION = 0  # 0th element in tuple above is the conversion action
+FILTERING_ACTION = 1  # 1st element in tuple above is the filtering action
+
+
+def return_data(request, model, query_filter_params):
+    all_objects = serializers.serialize('json', model.objects.all())
+    json_objects = json.loads(all_objects)
+    response_data = list(map(lambda x: x['fields'], json_objects))  # 'fields' -> a relic of how django processes data
+
+    for param in query_filter_params:
+        user_params = request.GET.get(param, '')
+        if user_params == '':
+            continue
+        try:
+            param_value = filter_actions[param][CONVERSION_ACTION](user_params)
+            response_data = filter_actions[param][FILTERING_ACTION](response_data, param_value)
+        except ValueError:
+            return HttpResponse(response_prefix + 'Data pull denied -- invalid query params.', status=400)
+
+    return HttpResponse(json.dumps(response_data), content_type='application/json', status=200)
 
 
 def handle_invalid_request(request):

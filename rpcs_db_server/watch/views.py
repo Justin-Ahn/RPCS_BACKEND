@@ -12,8 +12,9 @@ def patient(request):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_name', 'patient_id', 'event', 'event_id')
+    filterable_params = ['patient_id']
     if request.method == "GET":
-        return return_data(request, Patient, 'patient_id')
+        return return_data(request, Patient, filterable_params)
     elif request.method == "POST":
         return ingest_data(request, Patient, my_fields)
     else:
@@ -26,8 +27,9 @@ def events(request):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('event_id', 'event_description', 'event_category')
+    filterable_params = ['event_id']
     if request.method == "GET":
-        return return_data(request, Event, 'event_id')
+        return return_data(request, Event, filterable_params)
     elif request.method == "POST":
         return ingest_data(request, Event, my_fields)
     else:
