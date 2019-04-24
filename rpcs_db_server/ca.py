@@ -14,11 +14,13 @@ def main():
     try:
         connection = psycopg2.connect(user='rpcs', password='rpcs2019', host='localhost', port='', database='rpcs')
         cursor = connection.cursor()
+        #wt_analysis(connection, cursor)
     except (Exception, psycopg2.Error) as error:
         print('Error while fetching data from postgreSQL', error)
     else:
         ct_analysis(connection, cursor)
         hs_analysis(connection, cursor)
+        watch_analysis(connection, cursor)
     finally:
         if connection:
             cursor.close()
@@ -32,6 +34,23 @@ def ct_analysis(connection, cursor):
     ct_incidents = cursor.fetchall()
     for row in ct_incidents:
         update_incident(connection, cursor, row[7], row[3])
+
+def watch_analysis(connection, cursor) :
+    select_query = "select * from watch_Event"
+    cursor.execute(select_query)
+    watch_events = cursor.fetchall()
+    for row in watch_events :
+        # row[3] is event_category
+        if row[3] == "fall" :
+            update_num_of_falls(connection, cursor, row[2])
+
+def wt_analysis(connection, cursor):
+    trigger_query = "CREATE TRIGGER IfWandering UPDATE ON ca_wandering FOR EACH ROW WHEN (OLD.isWandering IS DISTINCT FROM NEW.isWandering) SELCET isWandering FROM ca_wandering"
+    query = "select isWandering from ca_wandering"
+    cursor.execute(query)
+    wt_wandering = cursor.fetchall()
+    print(wt_wandering)
+
 
 def hs_analysis(connection, cursor):
     # home sensor: determine room entry
@@ -57,7 +76,7 @@ def hs_analysis(connection, cursor):
                     # if at night, add bathroom entry into sleep_trend table
                     if check_night(hs_br_entry_ts):
                         update_night_br_usage(connection, cursor, hs_br_entry_ts)
-                    print("New entry at: ", hs_br_entry_ts)
+                    #print("New entry at: ", hs_br_entry_ts)
                 else:
                     hs_br_entry_ts = row[4]
                     hs_br_rfid = True
@@ -67,22 +86,15 @@ def hs_analysis(connection, cursor):
                     # if at night, add bathroom entry into sleep_trend table
                     if check_night(hs_br_entry_ts):
                         update_night_br_usage(connection, cursor, hs_br_entry_ts)
-                    print("New entry at: ", hs_br_entry_ts)
+                    #print("New entry at: ", hs_br_entry_ts)
                 else:
                     hs_br_entry_ts = row[4]
                     hs_br_motn = True
         else:
             if row[3] == 'rfid' and 'UNBROKEN' not in row[5]:
+                return
                 # insert bathroom exit into table
-                print("New exit at: ", row[4])
-                        
-        print('ID = ', row[0])
-        print('event_type = ', row[1])
-        print('sensor_id = ', row[2])
-        print('sensor_type = ', row[3])
-        print('timestamp = ', row[4])
-        print('data = ', row[5])
-        print('event_id = ', row[6], '\n')
+                #print("New exit at: ", row[4] ,#print('ID = ', row[0])#print('event_type = ', row[1])#print('sensor_id = ', row[2])#print('sensor_type = ', row[3])#print('timestamp = ', row[4])#print('data = ', row[5], '\n')
 
 def update_incident(connection, cursor, incident_type, timestamp):
     #TODO: only hallucination in incident summary?
@@ -102,6 +114,28 @@ def update_incident(connection, cursor, incident_type, timestamp):
     connection.commit()
     print('Successfully update incident summary-hallucinations')
 
+def update_num_of_falls(connection, cursor, timestamp) :
+    sql_query = "select * from ca_incident_summary where date = %s"
+    timestamp = datetime.datetime.fromtimestamp(float(timestamp[:10]))
+    curdate = timestamp.date()
+    print (curdate)
+    cursor.execute(sql_query, (curdate,))
+    record = cursor.fetchone()
+    if record :
+        print ("update num_falls")
+        print (record)
+        #update_query = "update ca_incident_summary set num_falls = 0 where patient_id = 1 and date = %s"
+        #cursor.execute(update_query, (curdate,))
+        update_query = "update ca_incident_summary set num_falls = num_falls + 1 where patient_id = 1 and date = %s"
+        cursor.execute(update_query,(curdate,))
+    else:
+        print ("insert num_falls")
+        insert_query = "insert into ca_incident_summary (patient_id, date, num_falls) VALUES (%s, %s, %s)"
+        record_to_insert = (1, curdate, 1) 
+        cursor.execute(insert_query, record_to_insert)
+    connection.commit()
+    print("Successfully update ca incident summary of num_falls")
+    
 
 def update_night_br_usage(connection, cursor, timestamp):
     select_query = "select * from ca_sleep_trend where date = %s"
