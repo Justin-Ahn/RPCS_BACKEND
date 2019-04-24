@@ -1,10 +1,4 @@
 import psycopg2
-
-try:
-    connection = psycopg2.connect(user='rpcs', password='rpcs2019', host='localhost', port='', database='rpcs')
-    cursor = connection.cursor()
-    postgreSQL_select_Query = "select * from hs_events"
-
 import sys
 import psycopg2
 import datetime
@@ -89,14 +83,6 @@ def hs_analysis(connection, cursor):
         print('timestamp = ', row[4])
         print('data = ', row[5])
         print('event_id = ', row[6], '\n')
-except (Exception, psycopg2.Error) as error:
-    print('Error while fetching data from postgreSQL', error)
-finally:
-    if connection:
-        cursor.close()
-        connection.close()
-        print('PostgreSQL connection is closed')
-
 
 def update_incident(connection, cursor, incident_type, timestamp):
     #TODO: only hallucination in incident summary?
