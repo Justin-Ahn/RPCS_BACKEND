@@ -31,16 +31,6 @@ class Phys_params(models.Model):
     bias_logit = models.FloatField()
     ar = models.FloatField()
 
-class Phys_incidents(models.Model):
-    patient_id = models.IntegerField()
-    incident_id = models.IntegerField()
-    timestamp = models.DateTimeField()
-    pulse_rate = models.FloatField()
-    respiratory_rate = models.FloatField()
-    blood_pressure = models.FloatField()
-    incident_type = models.CharField(max_length=200)
-    recording = models.CharField(max_length=200)
-
 class Sleep_trend(models.Model):
     patient_id = models.IntegerField()
     date = models.DateField()
