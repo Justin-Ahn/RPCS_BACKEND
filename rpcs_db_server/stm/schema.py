@@ -27,10 +27,10 @@ class CreateResults(graphene.Mutation):
 		scaled_rating2, test_results):
 		user = info.context.user or None
 		
-		res = Results(patient_name=patient_name, patient_id=patient_id,
+		results = Results(patient_name=patient_name, patient_id=patient_id,
 			scaled_rating1=scaled_rating1, scaled_rating2=scaled_rating2,
 			test_results=test_results)
-		res.save()
+		results.save()
 
 		return CreateResults(
 			patient_name = res.patient_name,
