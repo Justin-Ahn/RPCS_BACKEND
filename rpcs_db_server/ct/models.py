@@ -1,13 +1,14 @@
 from django.db import models
+import datetime
 
 # Create your models here.
 class Incident(models.Model):
     patient_id = models.IntegerField()
     incident_id = models.IntegerField()
     timestamp = models.DateTimeField()
-    pulse_rate = models.FloatField()
-    respiratory_rate = models.FloatField()
-    blood_pressure = models.FloatField()
+    date = models.DateField(default=datetime.date.today)
+    pulse_rate = models.FloatField(null=True, blank=True)
+    respiratory_rate = models.FloatField(null=True, blank=True)
     incident_type = models.CharField(max_length=200)
     recording = models.CharField(max_length=200)
 
