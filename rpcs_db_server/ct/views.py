@@ -12,7 +12,7 @@ def patient_incidents(request):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('patient_id', 'incident_id', 'timestamp', 'pulse_rate', 'respiratory_rate', 'blood_pressure',
-                 'incident_type', 'recording')
+                 'incident_type', 'recording', 'details')
     filterable_params = ['patient_id', 'incident_id', 'time_start', 'time_end']
     if request.method == "GET":
         return return_data(request, Incident, filterable_params)

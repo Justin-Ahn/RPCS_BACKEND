@@ -10,6 +10,7 @@ class Incident(models.Model):
     blood_pressure = models.FloatField()
     incident_type = models.CharField(max_length=200)
     recording = models.CharField(max_length=200)
+    details = models.CharField(max_length=1000)
 
 class Trend(models.Model):
     patient_id = models.IntegerField()

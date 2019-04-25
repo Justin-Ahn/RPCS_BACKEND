@@ -21,6 +21,7 @@ class CreateIncident(graphene.Mutation):
     blood_pressure = graphene.Float()
     incident_type = graphene.String()
     recording = graphene.String()
+    details = graphene.String()
 
     class Arguments:
         patient_id = graphene.Int()
@@ -31,16 +32,17 @@ class CreateIncident(graphene.Mutation):
         blood_pressure = graphene.Float()
         incident_type = graphene.String()
         recording = graphene.String()
+        details = graphene.String()
 
     def mutate(self, info, patient_id, incident_id, timestamp, pulse_rate,
-        respiratory_rate, blood_pressure, incident_type, recording):
+        respiratory_rate, blood_pressure, incident_type, recording, details):
 
         user = info.context.user or None
 
         inc = Incident(patient_id=patient_id, incident_id=incident_id,
             timestamp=timestamp, pulse_rate=pulse_rate, 
             respiratory_rate=respiratory_rate, blood_pressure=blood_pressure,
-            incident_type=incident_type, recording=recording)
+            incident_type=incident_type, recording=recording, details=details)
         inc.save()
 
         return CreateIncident(
@@ -51,7 +53,8 @@ class CreateIncident(graphene.Mutation):
             respiratory_rate = inc.respiratory_rate, 
             blood_pressure = inc.blood_pressure,
             incident_type = inc.incident_type, 
-            recording = inc.recording
+            recording = inc.recording,
+            details = inc.details
         )
 
 class CreateTrend(graphene.Mutation):
