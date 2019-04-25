@@ -45,8 +45,6 @@ class Sleep_trend(models.Model):
     patient_id = models.IntegerField()
     date = models.DateField()
     hours_slept = models.FloatField(blank=True, null=True)
-    hours_deep_sleep = models.FloatField(blank=True, null=True)
-    hours_light_sleep = models.FloatField(blank=True, null=True)
     hours_in_bed = models.FloatField(blank=True, null=True)
     num_wake_up = models.IntegerField(blank=True, null=True)
     num_get_out_of_bed = models.IntegerField(blank=True, null=True)
@@ -55,8 +53,7 @@ class Sleep_trend(models.Model):
 class Incident_summary(models.Model):
     patient_id = models.IntegerField()
     date = models.DateField()
-    num_hallucinations = models.IntegerField(blank=True, null=True)
     num_ltm_lapse = models.IntegerField(blank=True, null=True)
     num_stm_lapse = models.IntegerField(blank=True, null=True)
-    num_injury = models.IntegerField(blank=True, null=True)
+    num_falls = models.IntegerField(blank=True, null=True)
     num_wandering = models.IntegerField(blank=True, null=True)
