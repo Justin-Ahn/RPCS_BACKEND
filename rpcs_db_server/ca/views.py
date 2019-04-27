@@ -1,4 +1,4 @@
-from ca.models import Wandering, Phys_measure, Phys_incidents, Phys_params
+from ca.models import Wandering, Phys_measure, Phys_incidents, Phys_params, Sleep_trend, Incident_summary
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request, json_timestamp_customizer
@@ -62,5 +62,36 @@ def phys_params(request):
         return return_data(request, Phys_params, filterable_params)
     elif request.method == "POST":
         return ingest_data(request, Phys_params, my_fields)
+    else:
+        return handle_invalid_request(request)
+
+
+@csrf_exempt
+def sleep_trends(request):
+    if not authorized(request, "ca"):
+        return HttpResponse('Unauthorized', status=401)
+
+    my_fields = ('patient_id', 'date', 'hours_slept', 'hours_in_bed', 'num_wake_up', 'num_get_out_of_bed',
+                 'num_go_to_bathroom')
+    filterable_params = ['patient_id']
+    if request.method == "GET":
+        return return_data(request, Sleep_trend, filterable_params)
+    elif request.method == "POST":
+        return ingest_data(request, Sleep_trend, my_fields)
+    else:
+        return handle_invalid_request(request)
+
+
+@csrf_exempt
+def incident_summary(request):
+    if not authorized(request, "ca"):
+        return HttpResponse('Unauthorized', status=401)
+
+    my_fields = ('patient_id', 'date', 'num_ltm_lapse', 'num_stm_lapse', 'num_falls', 'num_wandering')
+    filterable_params = ['patient_id']
+    if request.method == "GET":
+        return return_data(request, Incident_summary, filterable_params)
+    elif request.method == "POST":
+        return ingest_data(request, Incident_summary, my_fields)
     else:
         return handle_invalid_request(request)
