@@ -3,8 +3,10 @@ from django.views.decorators.csrf import csrf_exempt
 from hs.models import Events, Sensors
 from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request, \
     json_timestamp_customizer, json_j2str_customizer
+from hs.ca import hs_analysis 
 import psycopg2
 import requests
+import threading
 
 # Create your views here.
 
@@ -23,7 +25,10 @@ def events(request):
     if request.method == "GET":
         return return_data(request, Events, filterable_params)
     elif request.method == "POST":
-        return ingest_data(request, Events, my_fields, json_customizer=hs_customizer)
+        response = ingest_data(request, Events, my_fields, json_customizer=hs_customizer)
+        if response.status_code == 200:
+            threading.Thread(target=stove_analysis).start()
+        return response
     else:
         return handle_invalid_request(request)
 
@@ -37,11 +42,7 @@ def sensors(request):
     if request.method == "GET":
         return return_data(request, Sensors, filterable_params)
     elif request.method == "POST":
-        response = ingest_data(request, Sensors, my_fields)
-        #if response.status_code == 200:
-            #stove_analysis()
-        requests.post("http://www.redoxygen.net/sms.dll?Action=SendSMS&AccountId=CI00206082&Email=annanm%40andrew%2Ecmu%2Eedu&Password=XddAv8r8&Recipient=4126166415&Message=Stove+Hot+Alert!!!")    
-        return response
+        return ingest_data(request, Sensors, my_fields)
     else:
         return handle_invalid_request(request)
     
@@ -57,7 +58,8 @@ def stove_analysis():
         cursor.execute(query)
         new_stove_data = cursor.fetchone()
         if "STOVE_HOT" in new_stove_data[4]:
-            requests.post("http://www.redoxygen.net/sms.dll?Action=SendSMS&AccountId=CI00206082&Email=annanm%40andrew%2Ecmu%2Eedu&Password=XddAv8r8&Recipient=4129236982&Message=StoveHot Alert!!!")
+            result =requests.post("http://www.redoxygen.net/sms.dll?Action=SendSMS&AccountId=CI00206082&Email=annanm%40andrew%2Ecmu%2Eedu&Password=XddAv8r8&Recipient=4126166415&Message=Stove+Hot+Alert!!!")
+            hs_analysis(connection, cursor)
     finally:
         if connection:
             cursor.close()
