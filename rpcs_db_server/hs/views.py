@@ -58,7 +58,7 @@ def stove_analysis():
         cursor.execute(query)
         new_stove_data = cursor.fetchone()
         if "STOVE_HOT" in new_stove_data[4]:
-            result =requests.post("http://www.redoxygen.net/sms.dll?Action=SendSMS&AccountId=CI00206082&Email=annanm%40andrew%2Ecmu%2Eedu&Password=XddAv8r8&Recipient=4126166415&Message=Stove+Hot+Alert!!!")
+            requests.post("http://www.redoxygen.net/sms.dll?Action=SendSMS&AccountId=CI00206123&Email=annanma%40cmu%2Eedu&Password=g3ahRKh6&Recipient=4126166415&Message=Hello+From+Test")
             hs_analysis(connection, cursor)
     finally:
         if connection:
