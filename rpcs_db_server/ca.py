@@ -153,8 +153,8 @@ def wt_analysis(connection, cursor):
 
 
 def wt_distance_analysis(connection, cursor) :
-    select_query = "select location, cast(timestamp AS DATE), patient_id from wt_patient"
-    cursor.execute(select_query)
+    select_query = "select location, timestamp, patient_id from wt_patient where timestamp between %s and %s"
+    cursor.execute(select_query,(datetime.datetime.today()-datetime.timedelta(days=1),datetime.datetime.today()))
     wt_patients = cursor.fetchall()
     for row in wt_patients :
         #print (row)
@@ -224,6 +224,7 @@ def update_incident(connection, cursor, incident_type, timestamp):
 def calculate_distance(connection, cursor, location, wt_date, wt_patient_id):
     if not location or not wt_date or not wt_patient_id or location == 'string':
         return
+    wt_date = wt_date.date()
     location = location.split(',')
     latitude = float(location[0])
     longtitude = float(location[1])
@@ -237,7 +238,7 @@ def calculate_distance(connection, cursor, location, wt_date, wt_patient_id):
         record_to_insert = (wt_patient_id, wt_date, distance)
         cursor.execute(insert_query, record_to_insert)
     else :
-        print ('update', wt_patient_id, wt_date, distance)
+        #print ('update', wt_patient_id, wt_date, distance)
         update_query = "update ca_incident_summary set walk_distance = walk_distance + %s where patient_id = %s and date = %s"
         cursor.execute(update_query, (distance, wt_patient_id, wt_date))
     connection.commit()
@@ -246,13 +247,10 @@ def update_num_of_falls(connection, cursor, timestamp) :
     sql_query = "select * from ca_incident_summary where date = %s"
     timestamp = datetime.datetime.fromtimestamp(float(timestamp[:10]))
     curdate = timestamp.date()
-    print (curdate)
     cursor.execute(sql_query, (curdate,))
     record = cursor.fetchone()
     if record :
         print ("update num_falls")
-        print (record)
-        #update_query = "update ca_incident_summary set num_falls = 0 where patient_id = 1 and date = %s"
         #cursor.execute(update_query, (curdate,))
         update_query = "update ca_incident_summary set num_falls = num_falls + 1 where patient_id = 1 and date = %s"
         cursor.execute(update_query,(curdate,))
