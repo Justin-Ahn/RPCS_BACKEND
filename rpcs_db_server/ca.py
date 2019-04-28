@@ -133,7 +133,6 @@ def fetch_watch_rate(connection, cursor) :
     record = cursor.fetchall() 
     newest_record = record[-1].split(',')
     update_query = "update ct_incident  set pulse_rate  = %s, respiratory = %s where pulse_rate = None and reapiratory = None"
-    #select_query = "select pulse_rate, respiratory_rate where pulse_rate = None and reapiratory_rate = None"
     cursor.execute(update_query,(newest_record[0], newest_record[1]))
     print ('Successfully update the pulse and respiratory rate!')
 
