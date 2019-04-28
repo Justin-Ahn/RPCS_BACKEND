@@ -65,7 +65,7 @@ def sleep_trends(request):
 
     # my_fields = ('patient_id', 'date', 'hours_slept', 'hours_in_bed', 'num_wake_up', 'num_get_out_of_bed',
     #             'num_go_to_bathroom')
-    filterable_params = ['patient_id']
+    filterable_params = ['patient_id', 'date_start', 'date_end']
     if request.method == "GET":
         return return_data(request, Sleep_trend, filterable_params)
     else:
@@ -78,7 +78,7 @@ def incident_summary(request):
         return HttpResponse('Unauthorized', status=401)
 
     # my_fields = ('patient_id', 'date', 'num_ltm_lapse', 'num_stm_lapse', 'num_falls', 'num_wandering')
-    filterable_params = ['patient_id']
+    filterable_params = ['patient_id', 'date_start', 'date_end']
     if request.method == "GET":
         return return_data(request, Incident_summary, filterable_params)
     else:

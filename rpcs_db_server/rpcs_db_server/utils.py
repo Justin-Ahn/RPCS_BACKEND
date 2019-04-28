@@ -34,6 +34,10 @@ def str_2_dt(s):
     return datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%fZ')
 
 
+def str_2_date(s):
+    return datetime.strptime(s, '%Y-%m-%d')
+
+
 def json_timestamp_customizer(json_data):
     if 'timestamp' in json_data:  # A disgusting hack but this will do...
         if json_data['timestamp'] is None:
@@ -122,7 +126,13 @@ filter_actions = {
                        lambda data, time_start: list(filter(lambda x: str_2_dt(x["timestamp"]) >= time_start, data))),
 
         "time_end": (lambda given_param: str_2_dt(given_param),
-                     lambda data, time_end: list(filter(lambda x: str_2_dt(x["timestamp"]) <= time_end, data)))
+                     lambda data, time_end: list(filter(lambda x: str_2_dt(x["timestamp"]) <= time_end, data))),
+
+        "date_start": (lambda given_param: str_2_date(given_param),
+                       lambda data, date_start: list(filter(lambda x: str_2_date(x["date"]) >= date_start, data))),
+
+        "date_end": (lambda given_param: str_2_date(given_param),
+                     lambda data, date_end: list(filter(lambda x: str_2_date(x["date"]) <= date_end, data)))
     }
 CONVERSION_ACTION = 0  # 0th element in tuple above is the conversion action
 FILTERING_ACTION = 1  # 1st element in tuple above is the filtering action
