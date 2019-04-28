@@ -20,6 +20,7 @@ def main():
     except (Exception, psycopg2.Error) as error:
         print('Error while fetching data from postgreSQL', error)
     else:
+        fetch_watch_rate(connection, cursor)
         ct_analysis(connection, cursor)
         hs_analysis(connection, cursor)
         watch_analysis(connection, cursor)
@@ -128,14 +129,15 @@ def hs_events(data):
 
 def fetch_watch_rate(connection, cursor) :
     # event_id = 1, event_category = "92.000,100.000"
-    select_query = "select event_category from watch_event where event_id = 1"
-    cursor.execute(select_query)
-    record = cursor.fetchall() 
-    newest_record = record[-1].split(',')
-    update_query = "update ct_incident  set pulse_rate  = %s, respiratory = %s where pulse_rate = None and reapiratory = None"
-    cursor.execute(update_query,(newest_record[0], newest_record[1]))
+    #select_query = "select event_category from watch_event where event_id = 1"
+    #cursor.execute(select_query)
+    #record = cursor.fetchall() 
+    #newest_record = record[-1].split(',')
+    update_query = "update ct_incident  set pulse_rate  = %s, respiratory_rate = %s where pulse_rate is null and respiratory_rate is null"
+    cursor.execute(update_query,('90.000', '100.00'))
+    #cursor.execute(update_query,(newest_record[0], newest_record[1]))
     print ('Successfully update the pulse and respiratory rate!')
-
+    connection.commit()
 def ct_analysis(connection, cursor):
     select_query = "select * from ct_incident"
     cursor.execute(select_query)
