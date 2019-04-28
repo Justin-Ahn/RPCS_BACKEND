@@ -1,9 +1,9 @@
 import psycopg2
 import sys
-import psycopg2
 import datetime
 import pytz
 import time
+import math
 
 # query helper string to filter data in the night
 utc = pytz.utc
@@ -12,6 +12,7 @@ night_start = datetime.time(0, 0, 0)
 night_end = datetime.time(7, 0, 0)
 
 def main():
+    print("Holy shit this thing ran at " + str(datetime.datetime.now()))
     try:
         connection = psycopg2.connect(user='rpcs', password='rpcs2019', host='localhost', port='', database='rpcs')
         cursor = connection.cursor()
@@ -22,6 +23,7 @@ def main():
         ct_analysis(connection, cursor)
         hs_analysis(connection, cursor)
         watch_analysis(connection, cursor)
+        wt_distance_analysis(connection, cursor)
         stove(connection, cursor)
     finally:
         if connection:
@@ -30,7 +32,7 @@ def main():
             print('PostgreSQL connection is closed')
 
 def stove(connection, cursor):
-    select_query = "select * from hs_events"
+    select_query = "select * from hs_events limit 100 offset 100"
     cursor.execute(select_query)
     hs_events_data = cursor.fetchall()
     hs_events(hs_events_data)
@@ -150,6 +152,13 @@ def wt_analysis(connection, cursor):
     print(wt_wandering)
 
 
+def wt_distance_analysis(connection, cursor) :
+    select_query = "select location, cast(timestamp AS DATE), patient_id from wt_patient"
+    cursor.execute(select_query)
+    wt_patients = cursor.fetchall()
+    for row in wt_patients :
+        #print (row)
+        calculate_distance(connection, cursor, row[0],row[1], row[2])
 def hs_analysis(connection, cursor):
     # home sensor: determine room entry
     hs_br_flag = False
@@ -212,6 +221,27 @@ def update_incident(connection, cursor, incident_type, timestamp):
     connection.commit()
     print('Successfully update incident summary-hallucinations')
 
+def calculate_distance(connection, cursor, location, wt_date, wt_patient_id):
+    if not location or not wt_date or not wt_patient_id or location == 'string':
+        return
+    location = location.split(',')
+    latitude = float(location[0])
+    longtitude = float(location[1])
+    distance = math.sqrt(latitude**2 + longtitude**2)
+    select_query = "select * from ca_incident_summary where date = %s and patient_id = %s"
+    cursor.execute(select_query,(wt_date, wt_patient_id))
+    record = cursor.fetchone()
+    if record is None :
+        print ('insert',wt_patient_id, wt_date, distance)
+        insert_query = "insert into ca_incident_summary (patient_id, date, walk_distance) VALUES (%s, %s, %s)"
+        record_to_insert = (wt_patient_id, wt_date, distance)
+        cursor.execute(insert_query, record_to_insert)
+    else :
+        print ('update', wt_patient_id, wt_date, distance)
+        update_query = "update ca_incident_summary set walk_distance = walk_distance + %s where patient_id = %s and date = %s"
+        cursor.execute(update_query, (distance, wt_patient_id, wt_date))
+    connection.commit()
+    print('Successfully update incident of walk_distance')
 def update_num_of_falls(connection, cursor, timestamp) :
     sql_query = "select * from ca_incident_summary where date = %s"
     timestamp = datetime.datetime.fromtimestamp(float(timestamp[:10]))
