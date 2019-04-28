@@ -9,6 +9,7 @@ class Incident(models.Model):
     date = models.DateField(default=datetime.date.today)
     pulse_rate = models.FloatField(null=True, blank=True)
     respiratory_rate = models.FloatField(null=True, blank=True)
+    blood_pressure = models.IntegerField()
     incident_type = models.CharField(max_length=200)
     recording = models.CharField(max_length=200)
     details = models.CharField(max_length=1000)
