@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate
 from django.core import serializers
 from django.http import HttpResponse
 from django.forms.models import modelform_factory
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import base64
 
@@ -45,6 +45,8 @@ def json_timestamp_customizer(json_data):
         else:
             try:
                 json_data['timestamp'] = str_2_dt(json_data['timestamp'])
+                # Add 1 microsecond (change won't be view-able) to keep trailing zeros in dt string
+                json_data['timestamp'] += timedelta(microseconds=1) 
             except ValueError:
                 return False
         return True
