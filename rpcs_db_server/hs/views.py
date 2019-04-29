@@ -38,7 +38,7 @@ def sensors(request):
         return HttpResponse('Unauthorized', status=401)
 
     my_fields = ('location', 'sensor_type', 'sensor_id', 'patient_id')
-    filterable_params = ['sensor_id', 'patient_id']
+    filterable_params = ['sensor_id', 'patient_id', 'event_type']
     if request.method == "GET":
         return return_data(request, Sensors, filterable_params)
     elif request.method == "POST":
