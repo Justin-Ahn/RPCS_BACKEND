@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class Wandering(models.Model):
     patient_id = models.IntegerField()
@@ -23,6 +24,7 @@ class Phys_measure(models.Model):
     rr_low = models.IntegerField()
     rr_high = models.IntegerField()
 
+
 class Phys_params(models.Model):
     patient_id = models.IntegerField()
     coef_bp = models.FloatField()
@@ -30,6 +32,7 @@ class Phys_params(models.Model):
     coef_rr = models.FloatField()
     bias_logit = models.FloatField()
     ar = models.FloatField()
+
 
 class Phys_incidents(models.Model):
     patient_id = models.IntegerField()
@@ -41,6 +44,7 @@ class Phys_incidents(models.Model):
     incident_type = models.CharField(max_length=200)
     recording = models.CharField(max_length=200)
 
+
 class Sleep_trend(models.Model):
     patient_id = models.IntegerField()
     date = models.DateField()
@@ -50,6 +54,7 @@ class Sleep_trend(models.Model):
     num_get_out_of_bed = models.IntegerField(blank=True, null=True)
     num_go_to_bathroom = models.IntegerField(blank=True, null=True)
 
+
 class Incident_summary(models.Model):
     patient_id = models.IntegerField()
     date = models.DateField()
@@ -57,3 +62,4 @@ class Incident_summary(models.Model):
     num_stm_lapse = models.IntegerField(blank=True, null=True)
     num_falls = models.IntegerField(blank=True, null=True)
     num_wandering = models.IntegerField(blank=True, null=True)
+    walk_distance = models.FloatField(blank=True, null=True)
