@@ -20,6 +20,7 @@ curdate = datetime.date(2019, curmonth, curday)
 
 
 def main():
+    print("Holy shit this thing ran at " + str(datetime.datetime.now()))
     try:
         connection = psycopg2.connect(user='rpcs', password='rpcs2019', host='localhost', port='', database='rpcs')
         cursor = connection.cursor()

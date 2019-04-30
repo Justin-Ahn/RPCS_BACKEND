@@ -7,8 +7,7 @@ from hs.ca import hs_analysis
 import psycopg2
 import threading
 import datetime
-import sys
-
+from pytz import timezone
 
 # Download the helper library from https://www.twilio.com/docs/python/install
 import twilio
@@ -17,6 +16,7 @@ from twilio.rest import Client
 account_sid = 'ACcb394859c733f5274639779eab2cb0a4'
 auth_token = '6470e99bc9d9373f286f89e647db5ec7'
 client = Client(account_sid, auth_token)
+est = timezone('US/Eastern')
 
 
 @csrf_exempt
@@ -59,7 +59,6 @@ def sensors(request):
 
 @csrf_exempt
 def hs_alert():
-    sys.stdout = open("error_msg.txt", "w")
     try:
         connection = psycopg2.connect(user='rpcs', password='rpcs2019', host='localhost', port='', database='rpcs')
         cursor = connection.cursor()
@@ -72,21 +71,18 @@ def hs_alert():
         if "STOVE_HOT" in new_data[4] or "STOVE_WARM" in new_data[4]:
             message = client.messages \
                 .create(
-                body='Stove Hot Alert at ' + str(datetime.datetime.now()),
+                body='Stove Hot Alert at ' + str(datetime.datetime.now(tz=est)),
                 from_='+14125672824',
                 to='+14126166415'
             )
-            print(message.error_message)
             hs_analysis(connection, cursor)
-        elif "FEET_DETECTED" in new_data[4]:
+        elif "Main door opened" in new_data[4]:
             message = client.messages \
                 .create(
-                body="Feet on mat at " + str(datetime.datetime.now()),
+                body='Main Door Opened at ' + str(datetime.datetime.now(tz=est)),
                 from_='+14125672824',
                 to='+14126166415'
             )
-            print(message.error_message)
-            hs_analysis(connection, cursor)
     finally:
         if connection:
             cursor.close()
