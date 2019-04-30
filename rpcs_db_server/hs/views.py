@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from hs.models import Events, Sensors
 from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request, \
     json_timestamp_customizer, json_j2str_customizer
-from hs.ca import hs_analysis
+from hs.ca import update_br_usage
 import psycopg2
 import threading
 import datetime
@@ -68,6 +68,7 @@ def hs_alert():
         query = "select * from hs_events order by timestamp desc limit 1"
         cursor.execute(query)
         new_data = cursor.fetchone()
+        # stove analysis
         if "STOVE_HOT" in new_data[4] or "STOVE_WARM" in new_data[4]:
             message = client.messages \
                 .create(
@@ -75,7 +76,7 @@ def hs_alert():
                 from_='+14125672824',
                 to='+14126166415'
             )
-            hs_analysis(connection, cursor)
+        # main door analysis
         elif "Main door opened" in new_data[4]:
             message = client.messages \
                 .create(
@@ -83,6 +84,16 @@ def hs_alert():
                 from_='+14125672824',
                 to='+14126166415'
             )
+        # bathroom usage analysis
+        elif "rfid" in new_data[2] or "pir" in new_data[2]:
+            if update_br_usage(new_data):
+                message = client.messages \
+                    .create(
+                    body='Patient In Bathroom at ' + str(datetime.datetime.now(tz=est)),
+                    from_='+14125672824',
+                    to='+14126166415'
+                )
+
     finally:
         if connection:
             cursor.close()
