@@ -4,6 +4,7 @@ import datetime
 import pytz
 import time
 from math import acos, radians, tan, atan, cos, sin, asin, sqrt
+from geopy import distance
 
 # query helper string to filter data in the night
 utc = pytz.utc
@@ -11,7 +12,9 @@ filter_night = "extract (hour from timestamp) >= 0 and extract (hour from timest
 night_start = datetime.time(0, 0, 0)
 night_end = datetime.time(7, 0, 0)
 
-curdate = datetime.date(2019, 4, 29)
+curday = 26
+curmonth = 4
+curdate = datetime.date(2019, curmonth, curday)
 patient_id = 2019
 
 
@@ -38,17 +41,19 @@ def main():
 
 
 def wt_distance_analysis(connection, cursor):
-    select_query = "select location, cast(timestamp AS DATE), patient_id from wt_patient where patient_id = '2019'"
-    cursor.execute(select_query)
+    select_query = "select location, cast(timestamp AS DATE), patient_id from wt_patient where patient_id = '2019' and extract (day from timestamp) = " + str(curday) + "and extract (month from timestamp) = " + str(curmonth)
+    cursor.execute(select_query, (curdate, ))
     wt_patients = cursor.fetchall()
-    total_dist = 0
+    total_dist = float(0)
     for i in range(len(wt_patients)):
-        row = wt_patients[i]
-        if i == 0:
-            continue
-        prev_location = wt_patients[i - 1][0]
-        print(prev_location)
-        total_dist += calculate_distance(row[0], prev_location, row[1], row[2])
+        cur_coor = str2coor(wt_patients[i][0])
+        # row = wt_patients[i]
+        if i > 0:
+            total_dist += distance.distance(cur_coor, pre_coor).km
+        pre_coor = cur_coor
+        # prev_location = wt_patients[i - 1][0]
+        # print(prev_location)
+        # total_dist += calculate_distance(row[0], prev_location, row[1], row[2])
 
     select_query = "select * from ca_incident_summary where date = %s and patient_id = %s"
     cursor.execute(select_query, (curdate, patient_id))
@@ -64,6 +69,13 @@ def wt_distance_analysis(connection, cursor):
         cursor.execute(update_query, (total_dist, patient_id, curdate))
     connection.commit()
     print('Successfully update incident of walk_distance')
+
+
+def str2coor(location):
+    locations = location.split(',')
+    lat = float(locations[1])
+    lon = float(locations[0])
+    return lat, lon
 
 
 def watch_analysis(connection, cursor, now):
