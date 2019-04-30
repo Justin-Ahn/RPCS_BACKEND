@@ -25,10 +25,10 @@ def patient(request):
     if not authorized(request, "watch"):
         return HttpResponse('Unauthorized', status=401)
 
-    my_fields = ('event_id', 'event_description', 'event_category', 'timestamp')
-    filterable_params = ['event_id', 'time_start', 'time_end']
+    my_fields = ('patient_name', 'patient_id', 'event', 'event_id')
+    filterable_params = ['event_id']
     if request.method == "GET":
-        return return_data(request, Event, filterable_params, json_customizer=json_timestamp_customizer)
+        return return_data(request, Patient, filterable_params)
     elif request.method == "POST":
         return ingest_data(request, Patient, my_fields)
     else:
@@ -40,12 +40,12 @@ def events(request):
     if not authorized(request, "watch"):
         return HttpResponse('Unauthorized', status=401)
 
-    my_fields = ('event_id', 'event_description', 'event_category')
-    filterable_params = ['event_id']
+    my_fields = ('event_id', 'event_description', 'event_category', 'timestamp')
+    filterable_params = ['event_id', 'time_start', 'time_end']
     if request.method == "GET":
         return return_data(request, Event, filterable_params)
     elif request.method == "POST":
-        res = ingest_data(request, Event, my_fields)
+        res = ingest_data(request, Event, my_fields, json_customizer=json_timestamp_customizer)
         if res.status_code == 200:
             threading.Thread(target=fall_alert).start()
         return res

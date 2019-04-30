@@ -123,7 +123,7 @@ filter_actions = {
 
         "sensor_id": (lambda given_param: given_param,  # No-op for this one
                       lambda data, sensor_id: list(filter(lambda x: x["sensor_id"] == sensor_id, data))),
-    
+
         "event_type": (lambda given_param: given_param,  # No-op for this one
                       lambda data, event_type: list(filter(lambda x: x["event_type"] == event_type, data))),
 

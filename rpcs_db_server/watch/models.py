@@ -13,7 +13,6 @@ class Event(models.Model):
     event_id = models.IntegerField(default=0)
     event_description = models.TextField(blank=True)
     event_category = models.CharField(max_length=100)
-
     timestamp = models.DateTimeField(null=True, blank=True)
 
 
