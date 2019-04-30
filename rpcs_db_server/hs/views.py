@@ -6,8 +6,9 @@ from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_in
 from hs.ca import update_br_usage
 import psycopg2
 import threading
-import datetime
+import datetime as dt
 from pytz import timezone
+import json
 
 # Download the helper library from https://www.twilio.com/docs/python/install
 import twilio
@@ -17,6 +18,10 @@ account_sid = 'ACcb394859c733f5274639779eab2cb0a4'
 auth_token = '6470e99bc9d9373f286f89e647db5ec7'
 client = Client(account_sid, auth_token)
 est = timezone('US/Eastern')
+cd_length = dt.timedelta(minutes=5)
+
+br_gateway_id = 'c76c5d12-6647-11e9-a923-1681be663d3e'
+br_motion_id = 'c26e4e88-2ecb-42ff-8482-4af80307a485'
 
 
 @csrf_exempt
@@ -72,7 +77,7 @@ def hs_alert():
         if "STOVE_HOT" in new_data[4] or "STOVE_WARM" in new_data[4]:
             message = client.messages \
                 .create(
-                body='Stove Hot Alert at ' + str(datetime.datetime.now(tz=est)),
+                body='Stove Hot Alert at ' + str(dt.datetime.now(tz=est)),
                 from_='+14125672824',
                 to='+14126166415'
             )
@@ -80,7 +85,7 @@ def hs_alert():
         elif "Main door opened" in new_data[4]:
             message = client.messages \
                 .create(
-                body='Main Door Opened at ' + str(datetime.datetime.now(tz=est)),
+                body='Main Door Opened at ' + str(dt.datetime.now(tz=est)),
                 from_='+14125672824',
                 to='+14126166415'
             )
@@ -89,11 +94,17 @@ def hs_alert():
             if update_br_usage(new_data):
                 message = client.messages \
                     .create(
-                    body='Patient In Bathroom at ' + str(datetime.datetime.now(tz=est)),
+                    body='Bathroom entry alert at ' + str(dt.datetime.now(tz=est)),
                     from_='+14125672824',
                     to='+14126166415'
                 )
-
+        elif "test_xiaoyu" in new_data[2]:
+            message = client.messages \
+                .create(
+                body='Postman test at ' + str(dt.datetime.now(tz=est)),
+                from_='+14125672824',
+                to='+14126166415'
+            )
     finally:
         if connection:
             cursor.close()
