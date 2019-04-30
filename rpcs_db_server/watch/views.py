@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request
+from rpcs_db_server.utils import authorized, ingest_data, return_data, handle_invalid_request, \
+                                 json_timestamp_customizer
 from watch.models import Patient, Event
 
 
@@ -26,10 +27,10 @@ def events(request):
     if not authorized(request, "watch"):
         return HttpResponse('Unauthorized', status=401)
 
-    my_fields = ('event_id', 'event_description', 'event_category')
-    filterable_params = ['event_id']
+    my_fields = ('event_id', 'event_description', 'event_category', 'timestamp')
+    filterable_params = ['event_id', 'time_start', 'time_end']
     if request.method == "GET":
-        return return_data(request, Event, filterable_params)
+        return return_data(request, Event, filterable_params, json_customizer=json_timestamp_customizer)
     elif request.method == "POST":
         return ingest_data(request, Event, my_fields)
     else:

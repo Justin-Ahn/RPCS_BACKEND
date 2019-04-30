@@ -14,4 +14,6 @@ class Event(models.Model):
     event_description = models.TextField(blank=True)
     event_category = models.CharField(max_length=100)
 
+    timestamp = models.DateTimeField(null=True, blank=True)
+
 
