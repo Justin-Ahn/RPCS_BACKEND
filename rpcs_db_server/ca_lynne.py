@@ -13,6 +13,11 @@ import sys
 import datetime
 import pytz
 
+curmonth = 4
+curday = 28
+
+curdate = datetime.date(2019, curmonth, curday)
+
 
 def main():
     try:
@@ -20,12 +25,11 @@ def main():
         cursor = connection.cursor()
         # wt_analysis(connection, cursor)
         mat, pillow = bed_analysis(connection, cursor)
-        print(datetime.date(2019, 4, 28))
+        print(curdate)
         if mat > 0:
-            print(type(datetime.date(2019, 4, 28)))
-            update_num_get_out_of_bed(connection, cursor)
+            update_num_get_out_of_bed(connection, cursor, (mat + 1) // 2)
         if pillow > 0:
-            update_num_wake_up(connection, cursor)
+            update_num_wake_up(connection, cursor, pillow)
     except (Exception, psycopg2.Error) as error:
         print('Error while fetching data from postgreSQL', error)
     else:
@@ -48,12 +52,12 @@ def bed_analysis(connection, cursor):
     off_pillow = 0
     mat_flag = False
     pillow_flag = True
-    mat_start_date = datetime.date(2019, 4, 28)
-    pillow_start_date = datetime.date(2019, 4, 28)
+    mat_start_date = curdate
+    pillow_start_date = curdate
     mat_record = []
     pillow_record = []
-    last_mat_time = datetime.datetime(2019, 4, 28, 12, 58, 49, 342380).replace(tzinfo=pytz.timezone('US/Eastern'))
-    last_pillow_time = datetime.datetime(2019, 4, 28, 14, 6, 37, 342380).replace(tzinfo=pytz.timezone('US/Eastern'))
+    last_mat_time = datetime.datetime(2019, curmonth, curday, 12, 58, 49, 342380).replace(tzinfo=pytz.timezone('US/Eastern'))
+    last_pillow_time = datetime.datetime(2019, curmonth, curday, 14, 6, 37, 342380).replace(tzinfo=pytz.timezone('US/Eastern'))
 
     for i in range(len(data)):
         sensor_time = data[i][3]
@@ -99,14 +103,15 @@ def bed_analysis(connection, cursor):
 
     mat_record.append(off_bed)
     pillow_record.append(off_pillow)
-    print(mat_record)
-    print(pillow_record)
+    # print(mat_record)
+    # print(pillow_record
+    off_bed = mat_record[0]
+    off_pillow = pillow_record[0]
     return off_bed, off_pillow
 
 
-def update_num_wake_up(connection, cursor):
+def update_num_wake_up(connection, cursor, pillow):
     select_query = "select * from ca_sleep_trend where date = %s"
-    curdate = datetime.date(2019, 4, 28)
     cursor.execute(select_query, (curdate,))
     record = cursor.fetchone()
     if record is None:
@@ -114,15 +119,14 @@ def update_num_wake_up(connection, cursor):
         record_to_insert = (1, curdate, 0)
         cursor.execute(insert_query, record_to_insert)
     else:
-        update_query = "update ca_sleep_trend set num_wake_up = num_wake_up + 1 where patient_id = 1 and date = %s"
-        cursor.execute(update_query, (curdate,))
+        update_query = "update ca_sleep_trend set num_wake_up = %s where patient_id = 1 and date = %s"
+        cursor.execute(update_query, (pillow, curdate))
     connection.commit()
     print('Successfully update sleep_trend num_wake_up')
 
 
-def update_num_get_out_of_bed(connection, cursor):
+def update_num_get_out_of_bed(connection, cursor, mat):
     select_query = "select * from ca_sleep_trend where date = %s"
-    curdate = datetime.date(2019, 4, 28)
     cursor.execute(select_query, (curdate,))
     record = cursor.fetchone()
     if record is None:
@@ -130,8 +134,8 @@ def update_num_get_out_of_bed(connection, cursor):
         record_to_insert = (1, curdate, 0)
         cursor.execute(insert_query, record_to_insert)
     else:
-        update_query = "update ca_sleep_trend set num_get_out_of_bed = num_get_out_of_bed + 1 where patient_id = 1 and date = %s"
-        cursor.execute(update_query, (curdate,))
+        update_query = "update ca_sleep_trend set num_get_out_of_bed = %s where patient_id = 1 and date = %s"
+        cursor.execute(update_query, (mat, curdate))
     connection.commit()
     print('Successfully update sleep_trend num_get_out_of_bed')
 
