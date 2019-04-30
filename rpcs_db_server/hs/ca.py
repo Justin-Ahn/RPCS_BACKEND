@@ -13,33 +13,43 @@ import datetime as dt
 from pytz import timezone
 import time
 import json
+import sys
 
 est = timezone('US/Eastern')
-cd_length = dt.timedelta(minutes=5)
+cd_length = dt.timedelta(minutes=1)
 
 # query helper string to filter data in the night
 filter_night = "extract (hour from timestamp) >= 0 and extract (hour from timestamp) <= 7"
 night_start = dt.time(0, 0, 0)
 night_end = dt.time(7, 0, 0)
 
-br_gateway_id = 'c76c5d12-6647-11e9-a923-1681be663d3e'
-br_motion_id = 'c26e4e88-2ecb-42ff-8482-4af80307a485'
+br_gateway_id = 'c26e4e88-2ecb-42ff-8482-4af80307a485'
+br_motion_id = 'c76c5d12-6647-11e9-a923-1681be663d3e'
+
+
+# # Download the helper library from https://www.twilio.com/docs/python/install
+# import twilio
+# from twilio.rest import Client
+#
+# account_sid = 'ACcb394859c733f5274639779eab2cb0a4'
+# auth_token = '6470e99bc9d9373f286f89e647db5ec7'
+# client = Client(account_sid, auth_token)
+# est = timezone('US/Eastern')
 
 
 # Update overnight bathroom usage
 # return boolean: whether or not to send alert to caregiver
 def update_br_usage(data):
-    # check sensor id
-    if data[1] not in [br_motion_id, br_gateway_id]:
+    if data[1] != br_motion_id and data[1] != br_gateway_id:
         return False
     with open('var_state.json', 'r+') as f:
         json_data = json.load(f)
-        cd_ts = dt.datetime.strptime(json_data['cd_ts'], '%Y-%m-%d %H:%M:%S')
+        cd_ts = str2datetime(json_data['cd_ts'])
         cur_ts = data[3]
         # first check if we are in 'cool down' mode
         if cd_now(cd_ts, cur_ts):
             return False
-        rfid_ts = dt.datetime.strptime(json_data['br_rfid_ts'], '%Y-%m-%d %H:%M:%S')
+        rfid_ts = str2datetime(json_data['br_rfid_ts'])
 
         if json_data['br_rfid']:  # if gateway sensor already triggered
             if data[1] == br_motion_id and "MOTION DETECTED" in data[4]:  # check whether motion is detected
@@ -49,7 +59,7 @@ def update_br_usage(data):
                     json_data['cd_ts'] = str(cur_ts + cd_length)
                     write_json(f, json_data)
                     return True
-            if data[1] == br_gateway_id:  # if gateway sensor is triggered again, update its timestamp
+            elif data[1] == br_gateway_id:  # if gateway sensor is triggered again, update its timestamp
                 json_data['br_rfid_ts'] = str(cur_ts)
                 write_json(f, json_data)
         else:  # if gateway sensor is not triggered (patient not in bathroom)
@@ -58,6 +68,10 @@ def update_br_usage(data):
                 json_data['br_rfid_ts'] = str(cur_ts)
                 write_json(f, json_data)
     return False
+
+
+def str2datetime(string):
+    return dt.datetime.strptime(string[0:-6], '%Y-%m-%d %H:%M:%S.%f').replace(tzinfo=est)
 
 
 def write_json(file, json_data):
@@ -104,3 +118,20 @@ def check_night(timestamp):
 
 def get_date(timestamp):
     return timestamp.date()
+
+# try:
+#     connection = psycopg2.connect(user='rpcs', password='rpcs2019', host='localhost', port='', database='rpcs')
+#     cursor = connection.cursor()
+# except (Exception, psycopg2.Error) as error:
+#     print('Error while fetching data from postgreSQL', error)
+# else:
+#     # ar_analysis(connection, cursor)
+#     query = "select * from hs_events order by timestamp desc limit 1"
+#     cursor.execute(query)
+#     new_data = cursor.fetchone()
+#     update_br_usage(new_data)
+# finally:
+#     if connection:
+#         cursor.close()
+#         connection.close()
+#         print('PostgreSQL connection is closed')
