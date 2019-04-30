@@ -1,9 +1,9 @@
-import math
 import sys
 import psycopg2
 import datetime
 import pytz
 import time
+from math import acos, radians, tan, atan, cos, sin, asin, sqrt
 
 # query helper string to filter data in the night
 utc = pytz.utc
@@ -11,22 +11,25 @@ filter_night = "extract (hour from timestamp) >= 0 and extract (hour from timest
 night_start = datetime.time(0, 0, 0)
 night_end = datetime.time(7, 0, 0)
 
+curdate = datetime.date(2019, 4, 29)
+patient_id = 2019
 
-def main(now):
+
+def main():
+    print("Holy shit this thing ran at " + str(datetime.datetime.now()))
     try:
         # pass
         connection = psycopg2.connect(user='rpcs', password='rpcs2019', host='localhost', port='', database='rpcs')
         cursor = connection.cursor()
-        # wt_analysis(connection, cursor)
     except (Exception, psycopg2.Error) as error:
         print('Error while fetching data from postgreSQL', error)
     else:
-        # wt_distance_analysis(connection, cursor)
-        fetch_watch_rate(connection, cursor)
+        wt_distance_analysis(connection, cursor)
+    # fetch_watch_rate(connection, cursor)
 
-        # select_query = "select * from watch_Event"
-        # cursor.execute(select_query)
-        # watch_analysis(connection, cursor,now)
+    # select_query = "select * from watch_Event"
+    # cursor.execute(select_query)
+    # watch_analysis(connection, cursor,now)
     finally:
         if connection:
             cursor.close()
@@ -35,12 +38,32 @@ def main(now):
 
 
 def wt_distance_analysis(connection, cursor):
-    select_query = "select location, cast(timestamp AS DATE), patient_id from wt_patient"
+    select_query = "select location, cast(timestamp AS DATE), patient_id from wt_patient where patient_id = '2019'"
     cursor.execute(select_query)
     wt_patients = cursor.fetchall()
-    for row in wt_patients:
-        # print (row)
-        calculate_distance(connection, cursor, row[0], row[1], row[2])
+    total_dist = 0
+    for i in range(len(wt_patients)):
+        row = wt_patients[i]
+        if i == 0:
+            continue
+        prev_location = wt_patients[i - 1][0]
+        print(prev_location)
+        total_dist += calculate_distance(row[0], prev_location, row[1], row[2])
+
+    select_query = "select * from ca_incident_summary where date = %s and patient_id = %s"
+    cursor.execute(select_query, (curdate, patient_id))
+    record = cursor.fetchone()
+    if record is None:
+        print('insert', patient_id, curdate, total_dist)
+        insert_query = "insert into ca_incident_summary (patient_id, date, walk_distance) VALUES (%s, %s, %s)"
+        record_to_insert = (patient_id, curdate, total_dist)
+        cursor.execute(insert_query, record_to_insert)
+    else:
+        print('update', patient_id, curdate, total_dist)
+        update_query = "update ca_incident_summary set walk_distance = %s where patient_id = %s and date = %s"
+        cursor.execute(update_query, (total_dist, patient_id, curdate))
+    connection.commit()
+    print('Successfully update incident of walk_distance')
 
 
 def watch_analysis(connection, cursor, now):
@@ -74,28 +97,42 @@ def fetch_watch_rate(connection, cursor):
     print('Successfully update the pulse and respiratory rate!')
 
 
-def calculate_distance(connection, cursor, location, wt_date, wt_patient_id):
+def lat_lng_distance(Lat_A, Lng_A, Lat_B, Lng_B):
+    ra = 6378.140
+    rb = 6356.755
+    flatten = (ra - rb) / ra
+    rad_lat_A = radians(Lat_A)
+    rad_lng_A = radians(Lng_A)
+    rad_lat_B = radians(Lat_B)
+    rad_lng_B = radians(Lng_B)
+    pA = atan(rb / ra * tan(rad_lat_A))
+    pB = atan(rb / ra * tan(rad_lat_B))
+    xx = acos(sin(pA) * sin(pB) + cos(pA) * cos(pB) * cos(rad_lng_A - rad_lng_B))
+    c1 = (sin(xx) - xx) * (sin(pA) + sin(pB)) ** 2 / cos(xx / 2) ** 2
+    c2 = (sin(xx) + xx) * (sin(pA) - sin(pB)) ** 2 / sin(xx / 2) ** 2
+    dr = flatten / 8 * (c1 - c2)
+    distance = ra * (xx + dr)
+    print("calculate distance")
+    return distance
+
+
+def calculate_distance(location, prev_location, wt_date, wt_patient_id):
     if not location or not wt_date or not wt_patient_id or location == 'string':
-        return
+        return 0
+
+    if not prev_location or prev_location == 'string':
+        return 0
+    # print (location, prev_location)
     location = location.split(',')
-    latitude = float(location[0])
-    longtitude = float(location[1])
-    distance = math.sqrt(latitude ** 2 + longtitude ** 2)
-    select_query = "select * from ca_incident_summary where date = %s and patient_id = %s"
-    cursor.execute(select_query, (wt_date, wt_patient_id))
-    record = cursor.fetchone()
-    if record is None:
-        print('insert', wt_patient_id, wt_date, distance)
-        insert_query = "insert into ca_incident_summary (patient_id, date, walk_distance) VALUES (%s, %s, %s)"
-        record_to_insert = (wt_patient_id, wt_date, distance)
-        cursor.execute(insert_query, record_to_insert)
-    else:
-        print('update', wt_patient_id, wt_date, distance)
-        update_query = "update ca_incident_summary set walk_distance = walk_distance + %s where patient_id = %s and date = %s"
-        cursor.execute(update_query, (distance, wt_patient_id, wt_date))
-    connection.commit()
-    print('Successfully update incident of walk_distance')
-    # print('Successfully update incident summary-hallucinations')
+    lat1 = float(location[0])
+    lon1 = float(location[1])
+
+    prev_location = prev_location.split(',')
+    lat2 = float(prev_location[0])
+    lon2 = float(prev_location[1])
+    # print (lat1, lon1, lat2, lon2)
+    distance = lat_lng_distance(lat1, lon1, lat2, lon2)
+    return distance
 
 
 def update_num_of_falls(connection, cursor, timestamp):
@@ -122,12 +159,5 @@ def update_num_of_falls(connection, cursor, timestamp):
 
 
 if __name__ == "__main__":
-    # connection = psycopg2.connect(user='rpcs', password='rpcs2019', host='localhost', port='', database='rpcs')
-    # cursor = connection.cursor()
-    while (1):
-        now = int(time.time())
-        main(now)
-        time.sleep(5)
-    # connection.close()
-    # cursor.close()
-    # sys.exit(0)
+    main()
+    sys.exit(0)
