@@ -57,8 +57,10 @@ def bed_analysis(connection, cursor):
     pillow_start_date = curdate
     mat_record = []
     pillow_record = []
-    last_mat_time = datetime.datetime(2019, curmonth, curday, 12, 58, 49, 342380).replace(tzinfo=pytz.timezone('US/Eastern'))
-    last_pillow_time = datetime.datetime(2019, curmonth, curday, 14, 6, 37, 342380).replace(tzinfo=pytz.timezone('US/Eastern'))
+    last_mat_time = datetime.datetime(2019, curmonth, curday, 12, 58, 49, 342380).replace(
+        tzinfo=pytz.timezone('US/Eastern'))
+    last_pillow_time = datetime.datetime(2019, curmonth, curday, 14, 6, 37, 342380).replace(
+        tzinfo=pytz.timezone('US/Eastern'))
 
     for i in range(len(data)):
         sensor_time = data[i][3]

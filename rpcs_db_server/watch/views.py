@@ -6,6 +6,7 @@ from watch.models import Patient, Event
 import psycopg2
 import threading
 import datetime
+from pytz import timezone
 
 # Download the helper library from https://www.twilio.com/docs/python/install
 import twilio
@@ -14,6 +15,7 @@ from twilio.rest import Client
 account_sid = 'ACcb394859c733f5274639779eab2cb0a4'
 auth_token = '6470e99bc9d9373f286f89e647db5ec7'
 client = Client(account_sid, auth_token)
+est = timezone('US/Eastern')
 
 
 # Create your views here.
@@ -65,7 +67,7 @@ def fall_alert():
         if "fall" in new_data[3]:
             message = client.messages \
                 .create(
-                body='Falling Alert at ' + str(datetime.datetime.now()),
+                body='Falling Alert at ' + str(datetime.datetime.now(tz=est)),
                 from_='+14125672824',
                 to='+14126166415'
             )
