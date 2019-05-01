@@ -18,10 +18,6 @@ account_sid = 'ACcb394859c733f5274639779eab2cb0a4'
 auth_token = '6470e99bc9d9373f286f89e647db5ec7'
 client = Client(account_sid, auth_token)
 est = timezone('US/Eastern')
-cd_length = dt.timedelta(minutes=5)
-
-br_gateway_id = 'c76c5d12-6647-11e9-a923-1681be663d3e'
-br_motion_id = 'c26e4e88-2ecb-42ff-8482-4af80307a485'
 
 
 @csrf_exempt
@@ -98,13 +94,6 @@ def hs_alert():
                     from_='+14125672824',
                     to='+14126166415'
                 )
-        elif "test_xiaoyu" in new_data[2]:
-            message = client.messages \
-                .create(
-                body='Postman test at ' + str(dt.datetime.now(tz=est)),
-                from_='+14125672824',
-                to='+14126166415'
-            )
     finally:
         if connection:
             cursor.close()
